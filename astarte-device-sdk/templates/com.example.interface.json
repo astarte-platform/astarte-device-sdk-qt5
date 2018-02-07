@@ -1,0 +1,17 @@
+{
+   "interface_name": "com.example.interface",
+   "version_major": 1,
+   "version_minor": 0,
+   "type": "properties",
+   "quality": "producer",
+   "mappings": [
+       {
+           "path": "/testString",
+           "type": "string"
+       },
+       {
+           "path": "/testInt",
+           "type": "integer"
+       }
+    ]
+}
