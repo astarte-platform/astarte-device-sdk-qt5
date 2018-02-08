@@ -42,11 +42,11 @@ Q_LOGGING_CATEGORY(astarteDeviceSDKDC, "astarte-device-sdk", DEBUG_MESSAGES_DEFA
 AstarteDeviceSDK::AstarteDeviceSDK(const QString &configurationPath, const QString &interfacesDir,
                                    const QByteArray &hardwareId, QObject *parent)
     : Hemera::AsyncInitObject(parent)
+    , m_hardwareId(hardwareId)
     , m_checker(new QJsonSchemaChecker())
     , m_configurationPath(configurationPath)
     , m_interfacesDir(interfacesDir)
 {
-    Hemera::FakeHardwareIDOperation::setHardwareId(hardwareId);
 }
 
 AstarteDeviceSDK::~AstarteDeviceSDK()
@@ -55,6 +55,14 @@ AstarteDeviceSDK::~AstarteDeviceSDK()
 
 void AstarteDeviceSDK::initImpl()
 {
+    int decodedLen = QByteArray::fromBase64(m_hardwareId, QByteArray::Base64UrlEncoding).count();
+    if (decodedLen != 16) {
+        setInitError(Hemera::Literals::literal(Hemera::Literals::Errors::badRequest()), QStringLiteral("Invalid hardware ID"));
+        qWarning() << "Invalid device ID: " << m_hardwareId << ", decoded len: " << decodedLen;
+        return;
+    }
+    Hemera::FakeHardwareIDOperation::setHardwareId(m_hardwareId);
+
     m_astarteTransport = new Hyperdrive::AstarteTransport(m_configurationPath, this);
     connect(m_astarteTransport->init(), &Hemera::Operation::finished, this, [this] (Hemera::Operation *op) {
         if (op->isError()) {
