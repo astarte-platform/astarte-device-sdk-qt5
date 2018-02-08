@@ -52,6 +52,7 @@ protected Q_SLOTS:
     void initImpl() override final;
 
 private:
+    QByteArray m_hardwareId;
     Hyperdrive::AstarteTransport *m_astarteTransport;
 
     QJsonSchemaChecker *m_checker;
