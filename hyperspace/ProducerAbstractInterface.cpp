@@ -143,58 +143,107 @@ void ProducerAbstractInterface::sendRawDataOnEndpoint(const QByteArray &value, c
     sendFluctuation(target, fluctuation);
 }
 
-void ProducerAbstractInterface::sendDataOnEndpoint(const QByteArray &value, const QByteArray &target, const QHash<QByteArray, QByteArray> &attributes)
+void ProducerAbstractInterface::sendDataOnEndpoint(const QByteArray &value, const QByteArray &target,
+        const QHash<QByteArray, QByteArray> &attributes, const QDateTime &timestamp, const QVariantHash &metadata)
 {
     Util::BSONSerializer serializer;
     serializer.appendBinaryValue("v", value);
+    if (!timestamp.isNull() && timestamp.isValid()) {
+        serializer.appendDateTime("t", timestamp);
+    }
+    if (!metadata.isEmpty()) {
+        serializer.appendDocument("m", metadata);
+    }
     serializer.appendEndOfDocument();
     sendRawDataOnEndpoint(serializer.document(), target, attributes);
 }
 
-void ProducerAbstractInterface::sendDataOnEndpoint(double value, const QByteArray &target, const QHash<QByteArray, QByteArray> &attributes)
+void ProducerAbstractInterface::sendDataOnEndpoint(double value, const QByteArray &target,
+        const QHash<QByteArray, QByteArray> &attributes, const QDateTime &timestamp, const QVariantHash &metadata)
 {
     Util::BSONSerializer serializer;
     serializer.appendDoubleValue("v", value);
+    if (!timestamp.isNull() && timestamp.isValid()) {
+        serializer.appendDateTime("t", timestamp);
+    }
+    if (!metadata.isEmpty()) {
+        serializer.appendDocument("m", metadata);
+    }
     serializer.appendEndOfDocument();
     sendRawDataOnEndpoint(serializer.document(), target, attributes);
 }
 
-void ProducerAbstractInterface::sendDataOnEndpoint(int value, const QByteArray &target, const QHash<QByteArray, QByteArray> &attributes)
+void ProducerAbstractInterface::sendDataOnEndpoint(int value, const QByteArray &target,
+        const QHash<QByteArray, QByteArray> &attributes, const QDateTime &timestamp, const QVariantHash &metadata)
 {
     Util::BSONSerializer serializer;
     serializer.appendInt32Value("v", value);
+    if (!timestamp.isNull() && timestamp.isValid()) {
+        serializer.appendDateTime("t", timestamp);
+    }
+    if (!metadata.isEmpty()) {
+        serializer.appendDocument("m", metadata);
+    }
     serializer.appendEndOfDocument();
     sendRawDataOnEndpoint(serializer.document(), target, attributes);
 }
 
-void ProducerAbstractInterface::sendDataOnEndpoint(qint64 value, const QByteArray &target, const QHash<QByteArray, QByteArray> &attributes)
+void ProducerAbstractInterface::sendDataOnEndpoint(qint64 value, const QByteArray &target, const QHash<QByteArray,
+        QByteArray> &attributes, const QDateTime &timestamp, const QVariantHash &metadata)
 {
     Util::BSONSerializer serializer;
     serializer.appendInt64Value("v", value);
+    if (!timestamp.isNull() && timestamp.isValid()) {
+        serializer.appendDateTime("t", timestamp);
+    }
+    if (!metadata.isEmpty()) {
+        serializer.appendDocument("m", metadata);
+    }
     serializer.appendEndOfDocument();
     sendRawDataOnEndpoint(serializer.document(), target, attributes);
 }
 
-void ProducerAbstractInterface::sendDataOnEndpoint(bool value, const QByteArray &target, const QHash<QByteArray, QByteArray> &attributes)
+void ProducerAbstractInterface::sendDataOnEndpoint(bool value, const QByteArray &target,
+        const QHash<QByteArray, QByteArray> &attributes, const QDateTime &timestamp, const QVariantHash &metadata)
 {
     Util::BSONSerializer serializer;
     serializer.appendBooleanValue("v", value);
+    if (!timestamp.isNull() && timestamp.isValid()) {
+        serializer.appendDateTime("t", timestamp);
+    }
+    if (!metadata.isEmpty()) {
+        serializer.appendDocument("m", metadata);
+    }
     serializer.appendEndOfDocument();
     sendRawDataOnEndpoint(serializer.document(), target, attributes);
 }
 
-void ProducerAbstractInterface::sendDataOnEndpoint(const QString &value, const QByteArray &target, const QHash<QByteArray, QByteArray> &attributes)
+void ProducerAbstractInterface::sendDataOnEndpoint(const QString &value, const QByteArray &target,
+        const QHash<QByteArray, QByteArray> &attributes, const QDateTime &timestamp, const QVariantHash &metadata)
 {
     Util::BSONSerializer serializer;
     serializer.appendString("v", value);
+    if (!timestamp.isNull() && timestamp.isValid()) {
+        serializer.appendDateTime("t", timestamp);
+    }
+    if (!metadata.isEmpty()) {
+        serializer.appendDocument("m", metadata);
+    }
     serializer.appendEndOfDocument();
     sendRawDataOnEndpoint(serializer.document(), target, attributes);
 }
 
-void ProducerAbstractInterface::sendDataOnEndpoint(const QDateTime &value, const QByteArray &target, const QHash<QByteArray, QByteArray> &attributes)
+void ProducerAbstractInterface::sendDataOnEndpoint(const QDateTime &value, const QByteArray &target,
+        const QHash<QByteArray, QByteArray> &attributes, const QDateTime &timestamp, const QVariantHash &metadata)
 {
     Util::BSONSerializer serializer;
     serializer.appendDateTime("v", value);
+    if (!timestamp.isNull() && timestamp.isValid()) {
+        serializer.appendDateTime("t", timestamp);
+    }
+    if (!metadata.isEmpty()) {
+        serializer.appendDocument("m", metadata);
+    }
     serializer.appendEndOfDocument();
     sendRawDataOnEndpoint(serializer.document(), target, attributes);
 }

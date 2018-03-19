@@ -41,8 +41,11 @@ public:
                      const QByteArray &hardwareId, QObject *parent = nullptr);
     ~AstarteDeviceSDK();
 
-    bool sendData(const QByteArray &interface, const QByteArray &path, const QVariant &value);
+    bool sendData(const QByteArray &interface, const QByteArray &path, const QVariant &value,
+            const QDateTime &timestamp = QDateTime(), const QVariantHash &metadata = QVariantHash());
 
+    bool sendData(const QByteArray &interface, const QByteArray &path, const QVariant &value,
+            const QVariantHash &metadata);
 Q_SIGNALS:
     void unsetReceived(const QByteArray &interface, const QByteArray &path);
     void dataReceived(const QByteArray &interface, const QByteArray &path, const QVariant &value);

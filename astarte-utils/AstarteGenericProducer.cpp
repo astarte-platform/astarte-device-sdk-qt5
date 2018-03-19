@@ -31,7 +31,8 @@ AstarteGenericProducer::~AstarteGenericProducer()
 {
 }
 
-bool AstarteGenericProducer::sendData(const QVariant &value, const QByteArray &target)
+bool AstarteGenericProducer::sendData(const QVariant &value, const QByteArray &target,
+        const QDateTime &timestamp, const QVariantHash &metadata)
 {
     QByteArrayList targetTokens = target.mid(1).split('/');
     QHash<QByteArray, QByteArrayList>::const_iterator it;
@@ -80,25 +81,25 @@ bool AstarteGenericProducer::sendData(const QVariant &value, const QByteArray &t
         converted.convert(m_mappingToType.value(matchedMapping));
         switch (converted.type()) {
             case QVariant::Bool:
-                sendDataOnEndpoint(value.toBool(), target, attributes);
+                sendDataOnEndpoint(value.toBool(), target, attributes, timestamp, metadata);
                 return true;
             case QVariant::ByteArray:
-                sendDataOnEndpoint(value.toByteArray(), target, attributes);
+                sendDataOnEndpoint(value.toByteArray(), target, attributes, timestamp, metadata);
                 return true;
             case QVariant::DateTime:
-                sendDataOnEndpoint(value.toDateTime(), target, attributes);
+                sendDataOnEndpoint(value.toDateTime(), target, attributes, timestamp, metadata);
                 return true;
             case QVariant::Double:
-                sendDataOnEndpoint(value.toDouble(), target, attributes);
+                sendDataOnEndpoint(value.toDouble(), target, attributes, timestamp, metadata);
                 return true;
             case QVariant::Int:
-                sendDataOnEndpoint(value.toInt(), target, attributes);
+                sendDataOnEndpoint(value.toInt(), target, attributes, timestamp, metadata);
                 return true;
             case QVariant::LongLong:
-                sendDataOnEndpoint(value.toLongLong(), target, attributes);
+                sendDataOnEndpoint(value.toLongLong(), target, attributes, timestamp, metadata);
                 return true;
             case QVariant::String:
-                sendDataOnEndpoint(value.toString(), target, attributes);
+                sendDataOnEndpoint(value.toString(), target, attributes, timestamp, metadata);
                 return true;
             default:
                 qWarning() << "Can't find valid type for " << target;

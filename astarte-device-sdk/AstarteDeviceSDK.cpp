@@ -266,14 +266,19 @@ Hyperspace::Reliability AstarteDeviceSDK::reliabilityStringToReliability(const Q
     }
 }
 
-bool AstarteDeviceSDK::sendData(const QByteArray &interface, const QByteArray &path, const QVariant &value)
+bool AstarteDeviceSDK::sendData(const QByteArray &interface, const QByteArray &path, const QVariant &value, const QDateTime &timestamp, const QVariantHash &metadata)
 {
     if (!m_producers.contains(interface)) {
         qCWarning(astarteDeviceSDKDC) << "No producers for interface " << interface;
         return false;
     }
 
-    return m_producers.value(interface)->sendData(value, path);
+    return m_producers.value(interface)->sendData(value, path, timestamp, metadata);
+}
+
+bool AstarteDeviceSDK::sendData(const QByteArray &interface, const QByteArray &path, const QVariant &value, const QVariantHash &metadata)
+{
+    return sendData(interface, path, value, QDateTime(), metadata);
 }
 
 void AstarteDeviceSDK::unsetValue(const QByteArray &interface, const QByteArray &path)
