@@ -276,6 +276,11 @@ bool AstarteDeviceSDK::sendData(const QByteArray &interface, const QByteArray &p
     return m_producers.value(interface)->sendData(value, path, timestamp, metadata);
 }
 
+bool AstarteDeviceSDK::sendData(const QByteArray &interface, const QByteArray &path, const QVariant &value, const QVariantHash &metadata)
+{
+    return sendData(interface, path, value, QDateTime(), metadata);
+}
+
 void AstarteDeviceSDK::unsetValue(const QByteArray &interface, const QByteArray &path)
 {
     Q_EMIT unsetReceived(interface, path);
