@@ -37,7 +37,8 @@ public:
                                     Hyperdrive::AstarteTransport *astarteTransport, QObject *parent = nullptr);
     virtual ~AstarteGenericProducer();
 
-    bool sendData(const QVariant &value, const QByteArray &target);
+    bool sendData(const QVariant &value, const QByteArray &target,
+            const QDateTime &timestamp = QDateTime(), const QVariantHash &metadata = QVariantHash());
 
     void setMappingToTokens(const QHash<QByteArray, QByteArrayList> &mappingToTokens);
     void setMappingToType(const QHash<QByteArray, QVariant::Type> &mappingToType);
