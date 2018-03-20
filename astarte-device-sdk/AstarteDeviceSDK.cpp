@@ -152,16 +152,16 @@ void AstarteDeviceSDK::createConsumer(const Hyperdrive::Interface &interface, co
     for (const QJsonValue &value : consumerObject.value(QStringLiteral("mappings")).toArray()) {
         QJsonObject mappingObj = value.toObject();
 
-        QByteArray path = mappingObj.value(QStringLiteral("path")).toString().toLatin1();
-        QByteArrayList tokens = path.mid(1).split('/');
-        mappingToTokens.insert(path, tokens);
+        QByteArray endpoint = mappingObj.value(QStringLiteral("endpoint")).toString().toLatin1();
+        QByteArrayList tokens = endpoint.mid(1).split('/');
+        mappingToTokens.insert(endpoint, tokens);
 
         QString typeString = mappingObj.value(QStringLiteral("type")).toString();
-        mappingToType.insert(path, typeStringToVariantType(typeString));
+        mappingToType.insert(endpoint, typeStringToVariantType(typeString));
 
         if (interface.interfaceType() == Hyperdrive::Interface::Type::Properties && mappingObj.contains(QStringLiteral("allow_unset"))) {
             bool allowUnset = mappingObj.value(QStringLiteral("allow_unset")).toBool();
-            mappingToAllowUnset.insert(path, allowUnset);
+            mappingToAllowUnset.insert(endpoint, allowUnset);
         }
     }
 
@@ -185,25 +185,25 @@ void AstarteDeviceSDK::createProducer(const Hyperdrive::Interface &interface, co
     for (const QJsonValue &value : producerObject.value(QStringLiteral("mappings")).toArray()) {
         QJsonObject mappingObj = value.toObject();
 
-        QByteArray path = mappingObj.value(QStringLiteral("path")).toString().toLatin1();
-        QByteArrayList tokens = path.mid(1).split('/');
-        mappingToTokens.insert(path, tokens);
+        QByteArray endpoint = mappingObj.value(QStringLiteral("endpoint")).toString().toLatin1();
+        QByteArrayList tokens = endpoint.mid(1).split('/');
+        mappingToTokens.insert(endpoint, tokens);
 
         QString typeString = mappingObj.value(QStringLiteral("type")).toString();
-        mappingToType.insert(path, typeStringToVariantType(typeString));
+        mappingToType.insert(endpoint, typeStringToVariantType(typeString));
 
         if (interface.interfaceType() == Hyperdrive::Interface::Type::DataStream) {
             if (mappingObj.contains(QStringLiteral("retention"))) {
                 QString retention = mappingObj.value(QStringLiteral("retention")).toString();
-                mappingToRetention.insert(path, retentionStringToRetention(retention));
+                mappingToRetention.insert(endpoint, retentionStringToRetention(retention));
             }
             if (mappingObj.contains(QStringLiteral("reliability"))) {
                 QString reliability = mappingObj.value(QStringLiteral("reliability")).toString();
-                mappingToReliability.insert(path, reliabilityStringToReliability(reliability));
+                mappingToReliability.insert(endpoint, reliabilityStringToReliability(reliability));
             }
             if (mappingObj.contains(QStringLiteral("expiry"))) {
                 int expiry = mappingObj.value(QStringLiteral("expiry")).toInt();
-                mappingToExpiry.insert(path, expiry);
+                mappingToExpiry.insert(endpoint, expiry);
             }
         }
     }
