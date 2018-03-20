@@ -1,0 +1,18 @@
+variables:
+    PROJECT_NAME: "astarte-device-sdk-qt5"
+
+stages:
+    - build
+
+next:build:
+    image: ubuntu:16.04
+    stage: build
+    script:
+        # Install additional packages
+        - apt-get -y update
+        - apt-get -y install cmake openssl libssl-dev libmosquittopp-dev qtbase5-dev gcc g++
+        - mkdir build
+        - cd build
+        - cmake -DENABLE_WERROR=ON ..
+        - make -j6
+        - make install
