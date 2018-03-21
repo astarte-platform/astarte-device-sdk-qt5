@@ -181,6 +181,7 @@ void AstarteDeviceSDK::createProducer(const Hyperdrive::Interface &interface, co
     QHash<QByteArray, Hyperspace::Retention> mappingToRetention;
     QHash<QByteArray, Hyperspace::Reliability> mappingToReliability;
     QHash<QByteArray, int> mappingToExpiry;
+    QHash<QByteArray, bool> mappingToAllowUnset;
 
     for (const QJsonValue &value : producerObject.value(QStringLiteral("mappings")).toArray()) {
         QJsonObject mappingObj = value.toObject();
@@ -205,6 +206,9 @@ void AstarteDeviceSDK::createProducer(const Hyperdrive::Interface &interface, co
                 int expiry = mappingObj.value(QStringLiteral("expiry")).toInt();
                 mappingToExpiry.insert(endpoint, expiry);
             }
+        } else if (interface.interfaceType() == Hyperdrive::Interface::Type::Properties && mappingObj.contains(QStringLiteral("allow_unset"))) {
+            bool allowUnset = mappingObj.value(QStringLiteral("allow_unset")).toBool();
+            mappingToAllowUnset.insert(endpoint, allowUnset);
         }
     }
 
@@ -215,6 +219,7 @@ void AstarteDeviceSDK::createProducer(const Hyperdrive::Interface &interface, co
     producer->setMappingToRetention(mappingToRetention);
     producer->setMappingToReliability(mappingToReliability);
     producer->setMappingToExpiry(mappingToExpiry);
+    producer->setMappingToAllowUnset(mappingToAllowUnset);
 
     m_producers.insert(interface.interface(), producer);
     qCDebug(astarteDeviceSDKDC) << "Producer for interface " << interface.interface() << " successfully initialized";
