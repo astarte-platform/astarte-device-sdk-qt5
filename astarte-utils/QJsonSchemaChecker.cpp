@@ -141,7 +141,7 @@ void QJsonSchemaChecker::validate(const QJsonValue & value, const QJsonObject &s
             ; // references have already been collected
         else if (attribute == QStringLiteral("title") || attribute == QStringLiteral("description")  || attribute == QStringLiteral("default") || attribute == QStringLiteral("format")
                 || attribute == QStringLiteral("defaultProperties") || attribute == QStringLiteral("propertyOrder") || attribute == QStringLiteral("append")
-                || attribute == QStringLiteral("step") || attribute == QStringLiteral("access") || attribute == QStringLiteral("options"))
+                || attribute == QStringLiteral("step") || attribute == QStringLiteral("access") || attribute == QStringLiteral("options") || attribute == QStringLiteral("$schema"))
             ; // nothing to do.
         else
         {
