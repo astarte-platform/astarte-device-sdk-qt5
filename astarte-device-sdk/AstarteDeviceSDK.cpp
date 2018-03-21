@@ -286,6 +286,16 @@ bool AstarteDeviceSDK::sendData(const QByteArray &interface, const QByteArray &p
     return sendData(interface, path, value, QDateTime(), metadata);
 }
 
+bool AstarteDeviceSDK::sendUnset(const QByteArray &interface, const QByteArray &path)
+{
+    if (!m_producers.contains(interface)) {
+        qCWarning(astarteDeviceSDKDC) << "No producers for interface " << interface;
+        return false;
+    }
+
+    return m_producers.value(interface)->unsetPath(path);
+}
+
 void AstarteDeviceSDK::unsetValue(const QByteArray &interface, const QByteArray &path)
 {
     Q_EMIT unsetReceived(interface, path);
