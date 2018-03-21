@@ -110,6 +110,17 @@ bool AstarteGenericProducer::sendData(const QVariant &value, const QByteArray &t
     return false;
 }
 
+bool AstarteGenericProducer::unsetPath(const QByteArray &target)
+{
+    if (m_mappingToAllowUnset.value(target)) {
+        sendRawDataOnEndpoint(QByteArray(), target);
+        return true;
+    }
+
+    qWarning() << "Trying to unset " << target << "without allow_unset";
+    return false;
+}
+
 void AstarteGenericProducer::setMappingToTokens(const QHash<QByteArray, QByteArrayList> &mappingToTokens)
 {
     m_mappingToTokens = mappingToTokens;
