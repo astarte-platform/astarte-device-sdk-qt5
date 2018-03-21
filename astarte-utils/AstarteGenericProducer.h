@@ -45,6 +45,7 @@ public:
     void setMappingToRetention(const QHash<QByteArray, Hyperspace::Retention> &m_mappingToRetention);
     void setMappingToReliability(const QHash<QByteArray, Hyperspace::Reliability> &m_mappingToReliability);
     void setMappingToExpiry(const QHash<QByteArray, int> &m_mappingToExpiry);
+    void setMappingToAllowUnset(const QHash<QByteArray, bool> &mappingToAllowUnset);
 
 protected:
     virtual void populateTokensAndStates() override final;
@@ -56,6 +57,7 @@ private:
     QHash<QByteArray, Hyperspace::Retention> m_mappingToRetention;
     QHash<QByteArray, Hyperspace::Reliability> m_mappingToReliability;
     QHash<QByteArray, int> m_mappingToExpiry;
+    QHash<QByteArray, bool> m_mappingToAllowUnset;
 
     Hyperdrive::Interface::Type m_interfaceType;
 };

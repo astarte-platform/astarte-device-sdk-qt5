@@ -135,6 +135,11 @@ void AstarteGenericProducer::setMappingToExpiry(const QHash<QByteArray, int> &ma
     m_mappingToExpiry = mappingToExpiry;
 }
 
+void AstarteGenericProducer::setMappingToAllowUnset(const QHash<QByteArray, bool> &mappingToAllowUnset)
+{
+    m_mappingToAllowUnset = mappingToAllowUnset;
+}
+
 void AstarteGenericProducer::populateTokensAndStates()
 {
 }
