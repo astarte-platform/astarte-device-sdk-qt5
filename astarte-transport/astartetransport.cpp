@@ -566,21 +566,9 @@ void AstarteTransport::publishIntrospection()
 
     qCInfo(astarteTransportDC) << "Publishing introspection!";
 
-    // Create a string representation
-    QByteArray payload;
-    for (QHash< QByteArray, Hyperdrive::Interface >::const_iterator i = introspection().constBegin(); i != introspection().constEnd(); ++i) {
-        payload.append(i.key());
-        payload.append(':');
-        payload.append(QByteArray::number(i.value().versionMajor()));
-        payload.append(':');
-        payload.append(QByteArray::number(i.value().versionMinor()));
-        payload.append(';');
-    }
 
-    // Remove last ;
-    payload.chop(1);
-
-    qCDebug(astarteTransportDC) << "Introspection is " << payload;
+    QByteArray introspectionPayload = introspectionString();
+    qCDebug(astarteTransportDC) << "Introspection is " << introspectionPayload;
 
     m_mqttBroker->publish(m_mqttBroker->rootClientTopic(), payload, Hyperdrive::MQTTClientWrapper::ExactlyOnceQoS);
 }
