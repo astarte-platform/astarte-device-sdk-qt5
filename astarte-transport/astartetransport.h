@@ -95,9 +95,12 @@ private:
     QString m_configurationPath;
     QString m_persistencyDir;
     QTimer *m_rebootTimer;
+    QByteArray m_lastSentIntrospection;
+    QByteArray m_inFlightIntrospection;
     bool m_synced;
     bool m_rebootWhenConnectionFails;
     int m_rebootDelayMinutes;
+    int m_inFlightIntrospectionMessageId;
 };
 }
 
