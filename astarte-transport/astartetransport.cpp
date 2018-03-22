@@ -75,6 +75,7 @@ AstarteTransport::AstarteTransport(const QString &configurationPath, QObject* pa
     , m_rebootTimer(new QTimer(this))
     , m_rebootWhenConnectionFails(false)
     , m_rebootDelayMinutes(600)
+    , m_inFlightIntrospectionMessageId(-1)
 {
     qRegisterMetaType<MQTTClientWrapper::Status>();
     connect(this, &AstarteTransport::introspectionChanged, this, [this] {
@@ -120,6 +121,7 @@ void AstarteTransport::initImpl()
 
         QSettings syncSettings(QStringLiteral("%1/transportStatus.conf").arg(m_persistencyDir), QSettings::IniFormat);
         m_synced = syncSettings.value(QStringLiteral("isSynced"), false).toBool();
+        m_lastSentIntrospection = syncSettings.value(QStringLiteral("lastSentIntrospection"), QByteArray()).toByteArray();
 
         AstarteTransportCache::setPersistencyDir(m_persistencyDir);
         connect(AstarteTransportCache::instance()->init(), &Hemera::Operation::finished, this, [this] (Hemera::Operation *op) {
@@ -412,6 +414,9 @@ void AstarteTransport::onStatusChanged(MQTTClientWrapper::Status status)
         if (!m_mqttBroker->sessionPresent() || !m_synced) {
             // We're desynced
             bigBang();
+        } else if (m_lastSentIntrospection != introspectionString()) {
+            publishIntrospection();
+            setupClientSubscriptions();
         }
 
         // Resend the messages that failed to be published
@@ -530,7 +535,39 @@ void AstarteTransport::onPublishConfirmed(int messageId)
         } else {
             AstarteTransportCache::instance()->insertOrUpdatePersistentEntry(cacheMessage.target(), cacheMessage.payload());
         }
+    } else if (messageId == m_inFlightIntrospectionMessageId) {
+        m_inFlightIntrospectionMessageId = -1;
+        m_lastSentIntrospection = m_inFlightIntrospection;
+        m_inFlightIntrospection = QByteArray();
+
+        QSettings syncSettings(QStringLiteral("%1/transportStatus.conf").arg(m_persistencyDir), QSettings::IniFormat);
+        syncSettings.setValue(QStringLiteral("lastSentIntrospection"), m_lastSentIntrospection);
     }
+}
+
+QByteArray AstarteTransport::introspectionString() const
+{
+    QByteArray ret;
+    QMap<QByteArray, Hyperdrive::Interface> sortedIntrospection;
+
+    // Put the introspection in a temporary map to guarantee ordering
+    for (QHash< QByteArray, Hyperdrive::Interface >::const_iterator i = introspection().constBegin(); i != introspection().constEnd(); ++i) {
+        sortedIntrospection.insert(i.key(), i.value());
+    }
+
+    for (QMap< QByteArray, Hyperdrive::Interface >::const_iterator i = sortedIntrospection.constBegin(); i != sortedIntrospection.constEnd(); ++i) {
+        ret.append(i.key());
+        ret.append(':');
+        ret.append(QByteArray::number(i.value().versionMajor()));
+        ret.append(':');
+        ret.append(QByteArray::number(i.value().versionMinor()));
+        ret.append(';');
+    }
+
+    // Remove last ;
+    ret.chop(1);
+
+    return ret;
 }
 
 void AstarteTransport::publishIntrospection()
@@ -541,23 +578,17 @@ void AstarteTransport::publishIntrospection()
 
     qCInfo(astarteTransportDC) << "Publishing introspection!";
 
-    // Create a string representation
-    QByteArray payload;
-    for (QHash< QByteArray, Hyperdrive::Interface >::const_iterator i = introspection().constBegin(); i != introspection().constEnd(); ++i) {
-        payload.append(i.key());
-        payload.append(':');
-        payload.append(QByteArray::number(i.value().versionMajor()));
-        payload.append(':');
-        payload.append(QByteArray::number(i.value().versionMinor()));
-        payload.append(';');
+    QByteArray introspectionPayload = introspectionString();
+    qCDebug(astarteTransportDC) << "Introspection is " << introspectionPayload;
+
+    int rc = m_mqttBroker->publish(m_mqttBroker->rootClientTopic(), introspectionPayload, Hyperdrive::MQTTClientWrapper::ExactlyOnceQoS);
+    if (rc < 0) {
+        qCWarning(astarteTransportDC) << "Can't send introspection, error " << rc;
+    } else {
+        qCInfo(astarteTransportDC) << "Published introspection with message id " << rc;
+        m_inFlightIntrospectionMessageId = rc;
+        m_inFlightIntrospection = introspectionPayload;
     }
-
-    // Remove last ;
-    payload.chop(1);
-
-    qCDebug(astarteTransportDC) << "Introspection is " << payload;
-
-    m_mqttBroker->publish(m_mqttBroker->rootClientTopic(), payload, Hyperdrive::MQTTClientWrapper::ExactlyOnceQoS);
 }
 
 QHash< QByteArray, Hyperdrive::Interface> AstarteTransport::introspection() const

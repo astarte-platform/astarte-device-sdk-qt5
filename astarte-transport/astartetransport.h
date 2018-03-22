@@ -85,6 +85,8 @@ private Q_SLOTS:
     void forceNewPairing();
 
 private:
+    QByteArray introspectionString() const;
+
     Astarte::Endpoint *m_astarteEndpoint;
     QPointer<MQTTClientWrapper> m_mqttBroker;
     QHash< quint64, Hyperspace::Wave > m_waveStorage;
@@ -93,9 +95,12 @@ private:
     QString m_configurationPath;
     QString m_persistencyDir;
     QTimer *m_rebootTimer;
+    QByteArray m_lastSentIntrospection;
+    QByteArray m_inFlightIntrospection;
     bool m_synced;
     bool m_rebootWhenConnectionFails;
     int m_rebootDelayMinutes;
+    int m_inFlightIntrospectionMessageId;
 };
 }
 
