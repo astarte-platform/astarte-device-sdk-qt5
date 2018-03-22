@@ -131,13 +131,17 @@ void QJsonSchemaChecker::validate(const QJsonValue & value, const QJsonObject &s
             checkEnum(value, attributeValue);
         else if (attribute == QStringLiteral("pattern"))
             checkPattern(value, attributeValue);
+        else if (attribute == QStringLiteral("minLength"))
+            checkMinLength(value, attributeValue);
+        else if (attribute == QStringLiteral("maxLength"))
+            checkMaxLength(value, attributeValue);
         else if (attribute == QStringLiteral("required"))
             checkRequired(value, attributeValue);
         else if (attribute == QStringLiteral("id"))
             ; // references have already been collected
         else if (attribute == QStringLiteral("title") || attribute == QStringLiteral("description")  || attribute == QStringLiteral("default") || attribute == QStringLiteral("format")
                 || attribute == QStringLiteral("defaultProperties") || attribute == QStringLiteral("propertyOrder") || attribute == QStringLiteral("append")
-                || attribute == QStringLiteral("step") || attribute == QStringLiteral("access") || attribute == QStringLiteral("options"))
+                || attribute == QStringLiteral("step") || attribute == QStringLiteral("access") || attribute == QStringLiteral("options") || attribute == QStringLiteral("$schema"))
             ; // nothing to do.
         else
         {
@@ -295,6 +299,40 @@ void QJsonSchemaChecker::checkPattern(const QJsonValue & value, const QJsonValue
     {
         _error = true;
         setMessage(QStringLiteral("Value %1 does not match pattern %2").arg(value.toString(), schema.toString()));
+    }
+}
+
+void QJsonSchemaChecker::checkMinLength(const QJsonValue & value, const QJsonValue & schema)
+{
+    if (!value.isString())
+    {
+        // only for strings
+        _error = true;
+        setMessage(QStringLiteral("minLength check only for string fields"));
+        return;
+    }
+
+    if (value.toString().length() < schema.toInt())
+    {
+        _error = true;
+        setMessage(QStringLiteral("Value %1 is shorter than minLength %2").arg(value.toString(), schema.toInt()));
+    }
+}
+
+void QJsonSchemaChecker::checkMaxLength(const QJsonValue & value, const QJsonValue & schema)
+{
+    if (!value.isString())
+    {
+        // only for strings
+        _error = true;
+        setMessage(QStringLiteral("maxLength check only for string fields"));
+        return;
+    }
+
+    if (value.toString().length() > schema.toInt())
+    {
+        _error = true;
+        setMessage(QStringLiteral("Value %1 is longer than maxLength %2").arg(value.toString(), schema.toInt()));
     }
 }
 

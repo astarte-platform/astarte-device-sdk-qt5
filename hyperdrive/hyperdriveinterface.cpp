@@ -182,7 +182,18 @@ Interface Interface::fromJson(const QJsonObject &jsonObj)
     }
 
     Quality interfaceQuality;
-    if (jsonObj.contains(QStringLiteral("quality"))) {
+    if (jsonObj.contains(QStringLiteral("ownership"))) {
+        QString ownershipString = jsonObj.value(QStringLiteral("ownership")).toString();
+        if (ownershipString == QStringLiteral("device")) {
+            interfaceQuality = Interface::Quality::Producer;
+        } else if (ownershipString == QStringLiteral("server")) {
+            interfaceQuality = Interface::Quality::Consumer;
+        } else {
+            qCWarning(hyperdriveInterfaceDC) << "Invalid ownership in Interface JSON object for interface " << interface;
+            return Interface();
+        }
+    } else if (jsonObj.contains(QStringLiteral("quality"))) {
+        qCWarning(hyperdriveInterfaceDC) << "quality is deprecated, use \"ownership\": \"device\"/\"server\"";
         QString qualityString = jsonObj.value(QStringLiteral("quality")).toString();
         if (qualityString == QStringLiteral("producer")) {
             interfaceQuality = Interface::Quality::Producer;
@@ -193,7 +204,7 @@ Interface Interface::fromJson(const QJsonObject &jsonObj)
             return Interface();
         }
     } else {
-        qCWarning(hyperdriveInterfaceDC) << "quality missing in Interface JSON object for interface " << interface;
+        qCWarning(hyperdriveInterfaceDC) << "ownership missing in Interface JSON object for interface " << interface;
         return Interface();
     }
 

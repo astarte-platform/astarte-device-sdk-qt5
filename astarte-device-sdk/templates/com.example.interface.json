@@ -3,14 +3,14 @@
    "version_major": 1,
    "version_minor": 0,
    "type": "properties",
-   "quality": "producer",
+   "ownership": "device",
    "mappings": [
        {
-           "path": "/testString",
+           "endpoint": "/testString",
            "type": "string"
        },
        {
-           "path": "/testInt",
+           "endpoint": "/testInt",
            "type": "integer"
        }
     ]

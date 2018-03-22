@@ -153,6 +153,24 @@ class QJsonSchemaChecker
         void checkPattern(const QJsonValue & value, const QJsonValue & schema);
 
         ///
+        /// Checks if the given string has a length greater than or equal to the limit given as the schema.
+        /// If this is not the case _error is set to true and an error-message is added to the message-queue.
+        ///
+        /// @param[in] value The given string
+        /// @param[in] schema The minimum length (as json-value)
+        ///
+        void checkMinLength(const QJsonValue & value, const QJsonValue & schema);
+
+        ///
+        /// Checks if the given string has a length less than or equal to the limit given as the schema.
+        /// If this is not the case _error is set to true and an error-message is added to the message-queue.
+        ///
+        /// @param[in] value The given string
+        /// @param[in] schema The maximum length (as json-value)
+        ///
+        void checkMaxLength(const QJsonValue & value, const QJsonValue & schema);
+
+        ///
         /// Checks if the required properties of an object are present. If this is not the
         /// case _error is set to true and an error-message is added to the message-queue.
         ///
