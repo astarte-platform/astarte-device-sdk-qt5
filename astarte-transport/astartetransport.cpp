@@ -533,6 +533,31 @@ void AstarteTransport::onPublishConfirmed(int messageId)
     }
 }
 
+QByteArray AstarteTransport::introspectionString() const
+{
+    QByteArray ret;
+    QMap<QByteArray, Hyperdrive::Interface> sortedIntrospection;
+
+    // Put the introspection in a temporary map to guarantee ordering
+    for (QHash< QByteArray, Hyperdrive::Interface >::const_iterator i = introspection().constBegin(); i != introspection().constEnd(); ++i) {
+        sortedIntrospection.insert(i.key(), i.value());
+    }
+
+    for (QMap< QByteArray, Hyperdrive::Interface >::const_iterator i = sortedIntrospection.constBegin(); i != sortedIntrospection.constEnd(); ++i) {
+        ret.append(i.key());
+        ret.append(':');
+        ret.append(QByteArray::number(i.value().versionMajor()));
+        ret.append(':');
+        ret.append(QByteArray::number(i.value().versionMinor()));
+        ret.append(';');
+    }
+
+    // Remove last ;
+    ret.chop(1);
+
+    return ret;
+}
+
 void AstarteTransport::publishIntrospection()
 {
     if (m_mqttBroker.isNull()) {

@@ -85,6 +85,8 @@ private Q_SLOTS:
     void forceNewPairing();
 
 private:
+    QByteArray introspectionString() const;
+
     Astarte::Endpoint *m_astarteEndpoint;
     QPointer<MQTTClientWrapper> m_mqttBroker;
     QHash< quint64, Hyperspace::Wave > m_waveStorage;
