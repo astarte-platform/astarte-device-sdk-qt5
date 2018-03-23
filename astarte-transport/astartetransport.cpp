@@ -415,6 +415,7 @@ void AstarteTransport::onStatusChanged(MQTTClientWrapper::Status status)
             // We're desynced
             bigBang();
         } else if (m_lastSentIntrospection != introspectionString()) {
+            qCDebug(astarteTransportDC) << "Introspection changed while offline, was:" << m_lastSentIntrospection;
             publishIntrospection();
             setupClientSubscriptions();
         }
