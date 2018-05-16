@@ -34,6 +34,13 @@ AstarteGenericProducer::~AstarteGenericProducer()
 bool AstarteGenericProducer::sendData(const QVariant &value, const QByteArray &target,
         const QDateTime &timestamp, const QVariantHash &metadata)
 {
+    if (!target.startsWith('/') || target.endsWith('/') || target.contains("//")
+            || target.contains(";") || target.contains('\n') || target.contains('\r')
+            || target.contains('+') || target.contains('#')) {
+        qWarning() << "Invalid target: " << target << ". Discarding value: " << value;
+        return false;
+    }
+
     QByteArrayList targetTokens = target.mid(1).split('/');
     QHash<QByteArray, QByteArrayList>::const_iterator it;
 
@@ -112,6 +119,13 @@ bool AstarteGenericProducer::sendData(const QVariant &value, const QByteArray &t
 
 bool AstarteGenericProducer::unsetPath(const QByteArray &target)
 {
+    if (!target.startsWith('/') || target.endsWith('/') || target.contains("//")
+            || target.contains(";") || target.contains('\n') || target.contains('\r')
+            || target.contains('+') || target.contains('#')) {
+        qWarning() << "Invalid target: " << target << ". Discarding unset.\n";
+        return false;
+    }
+
     if (m_mappingToAllowUnset.value(target)) {
         sendRawDataOnEndpoint(QByteArray(), target);
         return true;
