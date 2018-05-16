@@ -137,6 +137,14 @@ int ProducerAbstractInterface::dispatchIndex(const QList<QByteArray> &inputToken
 
 void ProducerAbstractInterface::sendRawDataOnEndpoint(const QByteArray &value, const QByteArray &target, const QHash<QByteArray, QByteArray> &attributes)
 {
+    if (!target.startsWith('/') || target.endsWith('/') || target.contains("//")
+            || target.contains(";") || target.contains('\n') || target.contains('\r')
+            || target.contains('\b') || target.contains('\t') || target.contains('\v')
+            || target.contains('\f') || target.contains('+') || target.contains('#') ) {
+        qWarning() << "ProducerAbstractInterface: invalid target: " << target << ". discarding value: " << value;
+        return;
+    }
+
     Fluctuation fluctuation;
     fluctuation.setPayload(value);
     fluctuation.setAttributes(attributes);
