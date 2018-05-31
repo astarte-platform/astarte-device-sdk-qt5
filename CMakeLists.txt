@@ -141,6 +141,7 @@ set(astartedevicesdk_SRCS
     transports/astarteendpoint.cpp
     transports/astarteverifycertificateoperation.cpp
     transports/astartehttpendpoint.cpp
+    transports/astartepairoperation.cpp
 )
 
 set(astartedevicesdk_HDRS

@@ -16,41 +16,36 @@
  * along with Astarte.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ASTARTE_HTTPENDPOINT_P_H
-#define ASTARTE_HTTPENDPOINT_P_H
+#ifndef ASTARTE_PAIROPERATION_H
+#define ASTARTE_PAIROPERATION_H
 
-#include "astartehttpendpoint.h"
-
-#include "astarteendpoint_p.h"
-
-class QNetworkAccessManager;
+#include <HemeraCore/Operation>
 
 namespace Astarte {
 
-class HTTPEndpointPrivate : public EndpointPrivate {
+class HTTPEndpoint;
+
+class PairOperation : public Hemera::Operation
+{
+    Q_OBJECT
+    Q_DISABLE_COPY(PairOperation)
 
 public:
-    HTTPEndpointPrivate(HTTPEndpoint *q) : EndpointPrivate(q) {}
+    explicit PairOperation(HTTPEndpoint *parent);
+    virtual ~PairOperation();
 
-    Q_DECLARE_PUBLIC(HTTPEndpoint)
+protected:
+    virtual void startImpl() override final;
 
-    QString endpointName;
-    QString endpointVersion;
-    QString configurationFile;
-    QString persistencyDir;
-    QUrl mqttBroker;
-    QNetworkAccessManager *nam;
-    QByteArray hardwareId;
+private Q_SLOTS:
+    void initiatePairing();
+    void performFakeAgentPairing();
+    void performPairing();
 
-    QByteArray agentKey;
-    QString brokerCa;
-    bool ignoreSslErrors;
-
-    QSslConfiguration sslConfiguration;
-
-    void connectToEndpoint();
+private:
+    HTTPEndpoint *m_endpoint;
 };
 
 }
 
-#endif // ASTARTE_HTTPENDPOINT_P_H
+#endif
