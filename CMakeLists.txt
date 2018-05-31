@@ -142,6 +142,7 @@ set(astartedevicesdk_SRCS
     transports/astarteverifycertificateoperation.cpp
     transports/astartehttpendpoint.cpp
     transports/astartepairoperation.cpp
+    transports/credentialssecretprovider.cpp
 )
 
 set(astartedevicesdk_HDRS
