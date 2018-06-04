@@ -143,6 +143,7 @@ set(astartedevicesdk_SRCS
     transports/astartehttpendpoint.cpp
     transports/astartepairoperation.cpp
     transports/credentialssecretprovider.cpp
+    transports/defaultcredentialssecretprovider.cpp
 )
 
 set(astartedevicesdk_HDRS
