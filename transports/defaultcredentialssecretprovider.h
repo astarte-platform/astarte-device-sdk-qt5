@@ -45,6 +45,10 @@ public:
     void setNAM(QNetworkAccessManager *nam);
     void setSslConfiguration(const QSslConfiguration &configuration);
 
+private slots:
+    void sendRegistrationRequest();
+    void retryRegistrationLater();
+
 private:
     QByteArray m_agentKey;
     QByteArray m_hardwareId;
