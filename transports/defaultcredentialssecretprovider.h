@@ -21,6 +21,10 @@
 
 #include "credentialssecretprovider.h"
 
+#include <QtCore/QUrl>
+
+class QNetworkAccessManager;
+
 namespace Astarte {
 
 class DefaultCredentialsSecretProvider : public CredentialsSecretProvider {
@@ -34,7 +38,21 @@ public:
 
     QByteArray credentialsSecret() const override;
 
+    void setAgentKey(const QByteArray &agentKey);
+    void setEndpointConfigurationPath(const QString &endpointConfigurationPath);
+    void setEndpointUrl(const QUrl &endpointUrl);
+    void setHardwareId(const QByteArray &hardwareId);
+    void setNAM(QNetworkAccessManager *nam);
+    void setSslConfiguration(const QSslConfiguration &configuration);
+
 private:
+    QByteArray m_agentKey;
+    QByteArray m_hardwareId;
+    QNetworkAccessManager *m_nam;
+    QSslConfiguration m_sslConfiguration;
+    QString m_endpointConfigurationPath;
+    QUrl m_endpointUrl;
+
     QByteArray m_credentialsSecret;
 };
 

@@ -42,4 +42,34 @@ QByteArray DefaultCredentialsSecretProvider::credentialsSecret() const
     return m_credentialsSecret;
 }
 
+void DefaultCredentialsSecretProvider::setAgentKey(const QByteArray &agentKey)
+{
+    m_agentKey = agentKey;
+}
+
+void DefaultCredentialsSecretProvider::setEndpointConfigurationPath(const QString &endpointConfigurationPath)
+{
+    m_endpointConfigurationPath = endpointConfigurationPath;
+}
+
+void DefaultCredentialsSecretProvider::setEndpointUrl(const QUrl &endpointUrl)
+{
+    m_endpointUrl = endpointUrl;
+}
+
+void DefaultCredentialsSecretProvider::setHardwareId(const QByteArray &hardwareId)
+{
+    m_hardwareId = hardwareId;
+}
+
+void DefaultCredentialsSecretProvider::setNAM(QNetworkAccessManager *nam)
+{
+    m_nam = nam;
+}
+
+void DefaultCredentialsSecretProvider::setSslConfiguration(const QSslConfiguration &configuration)
+{
+    m_sslConfiguration = configuration;
+}
+
 }
