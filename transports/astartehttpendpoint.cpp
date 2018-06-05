@@ -128,6 +128,14 @@ void HTTPEndpointPrivate::connectToEndpoint()
     });
 }
 
+void HTTPEndpointPrivate::retryConnectToEndpointLater()
+{
+    Q_Q(HTTPEndpoint);
+    int retryInterval = Hyperdrive::Utils::randomizedInterval(RETRY_INTERVAL, 1.0);
+    qCWarning(astarteHttpEndpointDC) << "Error while connecting to info endpoint, retrying in " << (retryInterval / 1000) << " seconds";
+    QTimer::singleShot(retryInterval, q, SLOT(connectToEndpoint()));
+}
+
 void HTTPEndpointPrivate::ensureCredentialsSecret()
 {
     Q_Q(HTTPEndpoint);

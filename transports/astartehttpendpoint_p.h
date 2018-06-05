@@ -56,6 +56,7 @@ public:
 
     void connectToEndpoint();
     void ensureCredentialsSecret();
+    void retryConnectToEndpointLater();
 };
 
 }
