@@ -22,6 +22,8 @@
 #include "astartecrypto.h"
 #include "astartepairoperation.h"
 #include "astarteverifycertificateoperation.h"
+#include "credentialssecretprovider.h"
+#include "defaultcredentialssecretprovider.h"
 #include "hyperdrivemqttclientwrapper.h"
 
 #include <QtCore/QDir>
@@ -126,6 +128,24 @@ void HTTPEndpointPrivate::connectToEndpoint()
     });
 }
 
+void HTTPEndpointPrivate::ensureCredentialsSecret()
+{
+    Q_Q(HTTPEndpoint);
+    DefaultCredentialsSecretProvider *provider = new DefaultCredentialsSecretProvider(q);
+    provider->setAgentKey(agentKey);
+    provider->setEndpointConfigurationPath(q->pathToAstarteEndpointConfiguration(endpointName));
+    provider->setEndpointUrl(endpoint);
+    provider->setHardwareId(hardwareId);
+    provider->setNAM(nam);
+    provider->setSslConfiguration(sslConfiguration);
+    credentialsSecretProvider = provider;
+
+    QObject::connect(credentialsSecretProvider, &CredentialsSecretProvider::credentialsSecretReady, q, [this, q] (const QByteArray &credentialsSecret) {
+        qCDebug(astarteHttpEndpointDC) << "Credentials secret is: " << credentialsSecret;
+    });
+
+    credentialsSecretProvider->ensureCredentialsSecret();
+}
 
 HTTPEndpoint::HTTPEndpoint(const QString &configurationFile, const QString &persistencyDir, const QUrl& endpoint, const QSslConfiguration &sslConfiguration, QObject* parent)
     : Endpoint(*new HTTPEndpointPrivate(this), endpoint, parent)

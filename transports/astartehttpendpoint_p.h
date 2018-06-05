@@ -55,6 +55,7 @@ public:
     CredentialsSecretProvider *credentialsSecretProvider;
 
     void connectToEndpoint();
+    void ensureCredentialsSecret();
 };
 
 }
