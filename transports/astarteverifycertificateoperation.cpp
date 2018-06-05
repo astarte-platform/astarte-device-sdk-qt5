@@ -80,7 +80,15 @@ void VerifyCertificateOperation::startImpl()
 
 void VerifyCertificateOperation::verify(const QByteArray &certificate)
 {
-    QNetworkReply *r = m_endpoint->sendRequest(QStringLiteral("/verifyCertificate"), certificate, Crypto::DeviceAuthenticationDomain);
+    QJsonObject data;
+    data.insert(QStringLiteral("client_crt"), QString::fromLatin1(certificate));
+    QJsonObject payload;
+    payload.insert(QStringLiteral("data"), data);
+
+    QByteArray payloadBytes = QJsonDocument(payload).toJson(QJsonDocument::Compact);
+
+    QNetworkReply *r = m_endpoint->sendRequest(QStringLiteral("/protocols/astarte_mqtt_v1/credentials/verify"),
+                       payloadBytes, Crypto::DeviceAuthenticationDomain);
 
     connect(r, &QNetworkReply::finished, this, [this, certificate, r] {
         if (r->error() != QNetworkReply::NoError) {
@@ -105,10 +113,11 @@ void VerifyCertificateOperation::verify(const QByteArray &certificate)
                 return;
             }
 
-            // TODO: handle timestamp field
-            QJsonObject verifyData = doc.object();
+            QJsonObject verifyData = doc.object().value(QStringLiteral("data")).toObject();
+            QString timestamp = verifyData.value(QStringLiteral("timestamp")).toString();
+            qCDebug(verifyCertDC) << "Verification server timestamp: " << timestamp;
             if (verifyData.value(QStringLiteral("valid")).toBool()) {
-                qCDebug(verifyCertDC) << "Valid certificate";
+                qCDebug(verifyCertDC) << "Valid certificate, until" << verifyData.value(QStringLiteral("until")).toString();
                 setFinished();
                 return;
             } else {
