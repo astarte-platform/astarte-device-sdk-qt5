@@ -57,11 +57,11 @@ namespace Astarte {
 void HTTPEndpointPrivate::connectToEndpoint()
 {
     QUrl infoEndpoint = endpoint;
-    infoEndpoint.setPath(endpoint.path() + QStringLiteral("/info"));
+    infoEndpoint.setPath(QStringLiteral("%1/devices/%2").arg(endpoint.path()).arg(QString::fromLatin1(hardwareId)));
     QNetworkRequest req(infoEndpoint);
     req.setSslConfiguration(sslConfiguration);
-    req.setRawHeader("Authorization", agentKey);
-    req.setRawHeader("X-Astarte-Transport-Provider", "Hemera");
+    req.setRawHeader("Authorization", "Bearer " + credentialsSecretProvider->credentialsSecret());
+    req.setRawHeader("X-Astarte-Transport-Provider", "Astarte Device SDK Qt5");
     req.setRawHeader("X-Astarte-Transport-Version", QStringLiteral("%1.%2.%3")
                                                      .arg(Hyperdrive::StaticConfig::hyperdriveMajorVersion())
                                                      .arg(Hyperdrive::StaticConfig::hyperdriveMinorVersion())
@@ -73,30 +73,43 @@ void HTTPEndpointPrivate::connectToEndpoint()
     Q_Q(HTTPEndpoint);
     QObject::connect(reply, &QNetworkReply::finished, q, [this, q, reply] {
         if (reply->error() != QNetworkReply::NoError) {
-            int retryInterval = Hyperdrive::Utils::randomizedInterval(RETRY_INTERVAL, 1.0);
-            qCWarning(astarteHttpEndpointDC) << "Error while connecting! Retrying in " << (retryInterval / 1000) << " seconds. error: " << reply->error();
-
-            // We never give up. If we couldn't connect, we reschedule this in 15 seconds.
-            QTimer::singleShot(retryInterval, q, SLOT(connectToEndpoint()));
+            qCWarning(astarteHttpEndpointDC) << "Error: " << reply->error();
+            retryConnectToEndpointLater();
             reply->deleteLater();
             return;
         }
 
-        QJsonDocument doc = QJsonDocument::fromJson(reply->readAll());
+        QByteArray response = reply->readAll();
+        QJsonDocument doc = QJsonDocument::fromJson(response);
         reply->deleteLater();
         if (!doc.isObject()) {
+            qCWarning(astarteHttpEndpointDC) << "Invalid JSON in connectToEndpoint: " << response.constData();
+            retryConnectToEndpointLater();
             return;
         }
 
         qCDebug(astarteHttpEndpointDC) << "Connected! " << doc.toJson(QJsonDocument::Indented);
 
-        QJsonObject rootReplyObj = doc.object();
+        QJsonObject rootReplyObj = doc.object().value(QStringLiteral("data")).toObject();
         endpointVersion = rootReplyObj.value(QStringLiteral("version")).toString();
 
         // Get configuration
+        QJsonObject astarteMqttV1Config = rootReplyObj.value(QStringLiteral("protocols")).toObject()
+                                                      .value(QStringLiteral("astarte_mqtt_v1")).toObject();
+        if (!astarteMqttV1Config.contains(QStringLiteral("broker_url"))) {
+            qCWarning(astarteHttpEndpointDC) << "No broker_url in response: " << response.constData();
+            retryConnectToEndpointLater();
+            return;
+        }
+
+        QString status = rootReplyObj.value(QStringLiteral("status")).toString();
+
+        qCDebug(astarteHttpEndpointDC) << "Device status is " << status;
+
         QSettings settings(QStringLiteral("%1/mqtt_broker.conf").arg(q->pathToAstarteEndpointConfiguration(endpointName)),
                            QSettings::IniFormat);
-        mqttBroker = QUrl::fromUserInput(rootReplyObj.value(QStringLiteral("url")).toString());
+        mqttBroker = QUrl::fromUserInput(astarteMqttV1Config.value(QStringLiteral("broker_url")).toString());
+        qCDebug(astarteHttpEndpointDC) << "Broker url is " << mqttBroker;
 
         // Initialize cryptography
         auto processCryptoStatus = [this, q] (bool ready) {
