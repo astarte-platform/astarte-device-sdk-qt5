@@ -142,6 +142,7 @@ void HTTPEndpointPrivate::ensureCredentialsSecret()
 
     QObject::connect(credentialsSecretProvider, &CredentialsSecretProvider::credentialsSecretReady, q, [this, q] (const QByteArray &credentialsSecret) {
         qCDebug(astarteHttpEndpointDC) << "Credentials secret is: " << credentialsSecret;
+        connectToEndpoint();
     });
 
     credentialsSecretProvider->ensureCredentialsSecret();
@@ -203,8 +204,7 @@ void HTTPEndpoint::initImpl()
                 }
             }
 
-            // Let's connect to our endpoint, shall we?
-            d->connectToEndpoint();
+            d->ensureCredentialsSecret();
         }
     });
 
