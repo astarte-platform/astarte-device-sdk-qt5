@@ -58,74 +58,12 @@ void PairOperation::startImpl()
                 return;
             }
 
-            initiatePairing();
+            performPairing();
         });
     } else {
         // Let's just go
-        initiatePairing();
-    }
-}
-
-void PairOperation::initiatePairing()
-{
-    // FIXME: This should be done using Global configuration!!
-    QSettings settings(QStringLiteral("%1/endpoint_crypto.conf").arg(m_endpoint->pathToAstarteEndpointConfiguration(m_endpoint->d_func()->endpointName)),
-                       QSettings::IniFormat);
-    if (settings.value(QStringLiteral("apiKey")).toString().isEmpty()) {
-        performFakeAgentPairing();
-    } else {
         performPairing();
     }
-}
-
-void PairOperation::performFakeAgentPairing()
-{
-    qWarning() << "Fake agent pairing!";
-    QJsonObject o;
-    o.insert(QStringLiteral("hwId"), QLatin1String(m_endpoint->d_func()->hardwareId));
-
-    QByteArray deviceIDPayload = QJsonDocument(o).toJson(QJsonDocument::Compact);
-    QNetworkReply *r = m_endpoint->sendRequest(QStringLiteral("/devices/apikeysFromDevice"), deviceIDPayload, Crypto::CustomerAuthenticationDomain);
-
-    qCDebug(astartePairOperationDC) << "I'm sending: " << deviceIDPayload.constData();
-
-    connect(r, &QNetworkReply::finished, this, [this, r, deviceIDPayload] {
-        if (r->error() != QNetworkReply::NoError) {
-            qCWarning(astartePairOperationDC) << "Pairing error! Error: " << r->error();
-            setFinishedWithError(Hemera::Literals::literal(Hemera::Literals::Errors::failedRequest()), r->errorString());
-            r->deleteLater();
-            return;
-        }
-
-        QJsonDocument doc = QJsonDocument::fromJson(r->readAll());
-        r->deleteLater();
-        qCDebug(astartePairOperationDC) << "Got the ok!";
-        if (!doc.isObject()) {
-            qCWarning(astartePairOperationDC) << "Parsing pairing result error!";
-            setFinishedWithError(Hemera::Literals::literal(Hemera::Literals::Errors::badRequest()), QStringLiteral("Parsing pairing result error!"));
-            return;
-        }
-
-        qCDebug(astartePairOperationDC) << "Payload is " << doc.toJson().constData();
-
-        QJsonObject pairData = doc.object();
-        if (!pairData.contains(QStringLiteral("apiKey"))) {
-            qCWarning(astartePairOperationDC) << "Missing apiKey in the pairing routine!";
-            setFinishedWithError(Hemera::Literals::literal(Hemera::Literals::Errors::badRequest()),
-                                 QStringLiteral("Missing apiKey in the pairing routine!"));
-            return;
-        }
-
-        // Ok, we need to write the files now.
-        {
-            QSettings settings(QStringLiteral("%1/endpoint_crypto.conf").arg(m_endpoint->pathToAstarteEndpointConfiguration(m_endpoint->d_func()->endpointName)),
-                               QSettings::IniFormat);
-            settings.setValue(QStringLiteral("apiKey"), pairData.value(QStringLiteral("apiKey")).toString());
-        }
-
-        // That's all, folks!
-        performPairing();
-    });
 }
 
 void PairOperation::performPairing()

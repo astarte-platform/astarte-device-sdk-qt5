@@ -38,8 +38,6 @@ protected:
     virtual void startImpl() override final;
 
 private Q_SLOTS:
-    void initiatePairing();
-    void performFakeAgentPairing();
     void performPairing();
 
 private:
