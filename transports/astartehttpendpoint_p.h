@@ -27,10 +27,15 @@ class QNetworkAccessManager;
 
 namespace Astarte {
 
+class CredentialsSecretProvider;
+
 class HTTPEndpointPrivate : public EndpointPrivate {
 
 public:
-    HTTPEndpointPrivate(HTTPEndpoint *q) : EndpointPrivate(q) {}
+    HTTPEndpointPrivate(HTTPEndpoint *q)
+        : EndpointPrivate(q)
+        , credentialsSecretProvider(nullptr)
+    {}
 
     Q_DECLARE_PUBLIC(HTTPEndpoint)
 
@@ -47,6 +52,7 @@ public:
     bool ignoreSslErrors;
 
     QSslConfiguration sslConfiguration;
+    CredentialsSecretProvider *credentialsSecretProvider;
 
     void connectToEndpoint();
 };
