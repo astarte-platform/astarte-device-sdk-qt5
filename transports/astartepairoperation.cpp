@@ -74,12 +74,20 @@ void PairOperation::performPairing()
         setFinishedWithError(Hemera::Literals::literal(Hemera::Literals::Errors::notFound()), QStringLiteral("Could not open CSR for reading! Aborting."));
     }
 
-    QByteArray deviceIDPayload = csr.readAll();
-    QNetworkReply *r = m_endpoint->sendRequest(QStringLiteral("/pairing"), deviceIDPayload, Crypto::DeviceAuthenticationDomain);
+    QByteArray csrBytes = csr.readAll();
+    QJsonObject data;
+    data.insert(QStringLiteral("csr"), QString::fromLatin1(csrBytes));
+    QJsonObject payload;
+    payload.insert(QStringLiteral("data"), data);
 
-    qCDebug(astartePairOperationDC) << "I'm sending: " << deviceIDPayload.constData();
+    QByteArray payloadBytes = QJsonDocument(payload).toJson(QJsonDocument::Compact);
 
-    connect(r, &QNetworkReply::finished, this, [this, r, deviceIDPayload] {
+    QNetworkReply *r = m_endpoint->sendRequest(QStringLiteral("/protocols/astarte_mqtt_v1/credentials"),
+                                               payloadBytes, Crypto::DeviceAuthenticationDomain);
+
+    qCDebug(astartePairOperationDC) << "I'm sending: " << payloadBytes.constData();
+
+    connect(r, &QNetworkReply::finished, this, [this, r, payloadBytes] {
         if (r->error() != QNetworkReply::NoError) {
             qCWarning(astartePairOperationDC) << "Pairing error!";
             setFinishedWithError(Hemera::Literals::literal(Hemera::Literals::Errors::failedRequest()), r->errorString());
@@ -98,8 +106,8 @@ void PairOperation::performPairing()
 
         qCDebug(astartePairOperationDC) << "Payload is " << doc.toJson().constData();
 
-        QJsonObject pairData = doc.object();
-        if (!pairData.contains(QStringLiteral("clientCrt"))) {
+        QJsonObject pairData = doc.object().value(QStringLiteral("data")).toObject();
+        if (!pairData.contains(QStringLiteral("client_crt"))) {
             qCWarning(astartePairOperationDC) << "Missing certificate in the pairing routine!";
             setFinishedWithError(Hemera::Literals::literal(Hemera::Literals::Errors::badRequest()), QStringLiteral("Missing certificate in the pairing routine!"));
             return;
@@ -113,7 +121,7 @@ void PairOperation::performPairing()
                 setFinishedWithError(Hemera::Literals::literal(Hemera::Literals::Errors::badRequest()), generatedCertificate.errorString());
                 return;
             }
-            generatedCertificate.write(pairData.value(QStringLiteral("clientCrt")).toVariant().toByteArray());
+            generatedCertificate.write(pairData.value(QStringLiteral("client_crt")).toVariant().toByteArray());
             generatedCertificate.flush();
             generatedCertificate.close();
         }
