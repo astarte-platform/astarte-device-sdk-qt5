@@ -211,38 +211,27 @@ QString HTTPEndpoint::pathToAstarteEndpointConfiguration(const QString &endpoint
 QNetworkReply *HTTPEndpoint::sendRequest(const QString& relativeEndpoint, const QByteArray& payload, Crypto::AuthenticationDomain authenticationDomain)
 {
     Q_D(const HTTPEndpoint);
-    // Build the endpoint
-    QUrl target = d->endpoint;
-    target.setPath(d->endpoint.path() + relativeEndpoint);
-
-    QNetworkRequest req(target);
-    req.setHeader(QNetworkRequest::ContentTypeHeader, QStringLiteral("application/json"));
-    req.setSslConfiguration(d->sslConfiguration);
-
-    qWarning() << "Request is: " << relativeEndpoint << payload << authenticationDomain;
-    // Authentication?
+    QNetworkRequest req;
     if (authenticationDomain == Crypto::DeviceAuthenticationDomain) {
-        // FIXME: This should be done using Global configuration!!
-        QSettings settings(QStringLiteral("%1/endpoint_crypto.conf").arg(pathToAstarteEndpointConfiguration(d->endpointName)),
-                           QSettings::IniFormat);
-        req.setRawHeader("X-API-Key", settings.value(QStringLiteral("apiKey")).toString().toLatin1());
-        req.setRawHeader("X-Hardware-ID", d->hardwareId);
-        req.setRawHeader("X-Astarte-Transport-Provider", "Hemera");
+        // Build the endpoint
+        QUrl target = d->endpoint;
+        target.setPath(QStringLiteral("%1/devices/%2%3").arg(d->endpoint.path()).arg(QString::fromLatin1(d->hardwareId)).arg(relativeEndpoint));
+        req.setUrl(target);
+
+        req.setHeader(QNetworkRequest::ContentTypeHeader, QStringLiteral("application/json"));
+        req.setSslConfiguration(d->sslConfiguration);
+
+        qCDebug(astarteHttpEndpointDC) << "Request is: " << relativeEndpoint << payload << authenticationDomain;
+
+        req.setRawHeader("Authorization", "Bearer " + d->credentialsSecretProvider->credentialsSecret());
+        req.setRawHeader("X-Astarte-Transport-Provider", "Astarte Device SDK Qt5");
         req.setRawHeader("X-Astarte-Transport-Version", QStringLiteral("%1.%2.%3")
                                                      .arg(Hyperdrive::StaticConfig::hyperdriveMajorVersion())
                                                      .arg(Hyperdrive::StaticConfig::hyperdriveMinorVersion())
                                                      .arg(Hyperdrive::StaticConfig::hyperdriveReleaseVersion())
                                                      .toLatin1());
-        qWarning() << "Setting X-API-Key:" << settings.value(QStringLiteral("apiKey")).toString();
-    } else if (authenticationDomain == Crypto::CustomerAuthenticationDomain) {
-        qWarning() << "Going to prepare authorization";
-        req.setRawHeader("Authorization", d->agentKey);
-        req.setRawHeader("X-Astarte-Transport-Provider", "Hemera");
-        req.setRawHeader("X-Astarte-Transport-Version", QStringLiteral("%1.%2.%3")
-                                                     .arg(Hyperdrive::StaticConfig::hyperdriveMajorVersion())
-                                                     .arg(Hyperdrive::StaticConfig::hyperdriveMinorVersion())
-                                                     .arg(Hyperdrive::StaticConfig::hyperdriveReleaseVersion())
-                                                     .toLatin1());
+    } else {
+        qCWarning(astarteHttpEndpointDC) << "Only DeviceAuthenticationDomain can be used in astartehttpendpoint";
     }
 
     return d->nam->post(req, payload);
