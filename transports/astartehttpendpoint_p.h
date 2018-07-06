@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Ispirata Srl
+ * Copyright (C) 2017-2018 Ispirata Srl
  *
  * This file is part of Astarte.
  * Astarte is free software: you can redistribute it and/or modify
@@ -21,18 +21,21 @@
 
 #include "astartehttpendpoint.h"
 
-#include <HemeraCore/Operation>
-
 #include "astarteendpoint_p.h"
 
 class QNetworkAccessManager;
 
 namespace Astarte {
 
+class CredentialsSecretProvider;
+
 class HTTPEndpointPrivate : public EndpointPrivate {
 
 public:
-    HTTPEndpointPrivate(HTTPEndpoint *q) : EndpointPrivate(q) {}
+    HTTPEndpointPrivate(HTTPEndpoint *q)
+        : EndpointPrivate(q)
+        , credentialsSecretProvider(nullptr)
+    {}
 
     Q_DECLARE_PUBLIC(HTTPEndpoint)
 
@@ -49,29 +52,11 @@ public:
     bool ignoreSslErrors;
 
     QSslConfiguration sslConfiguration;
+    CredentialsSecretProvider *credentialsSecretProvider;
 
     void connectToEndpoint();
-};
-
-class PairOperation : public Hemera::Operation
-{
-    Q_OBJECT
-    Q_DISABLE_COPY(PairOperation)
-
-public:
-    explicit PairOperation(HTTPEndpoint *parent);
-    virtual ~PairOperation();
-
-protected:
-    virtual void startImpl() override final;
-
-private Q_SLOTS:
-    void initiatePairing();
-    void performFakeAgentPairing();
-    void performPairing();
-
-private:
-    HTTPEndpoint *m_endpoint;
+    void ensureCredentialsSecret();
+    void retryConnectToEndpointLater();
 };
 
 }
