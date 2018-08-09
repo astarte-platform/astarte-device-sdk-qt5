@@ -51,7 +51,7 @@ bool AstarteGenericProducer::sendData(const QVariant &value, const QByteArray &t
 
         bool mappingMatch = true;
         for (int i = 0; i < targetTokens.size(); ++i) {
-            if (targetTokens.at(i).startsWith("%{")) {
+            if (it.value().at(i).startsWith("%{")) {
                 continue;
             }
 
