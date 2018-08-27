@@ -8,7 +8,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake/mo
 # Modify these variables to what suits the application best. Remember, no dashes in the version!
 set(ASTARTE_DEVICE_SDK_QT5_ABI_VERSION 0)
 set(ASTARTE_DEVICE_SDK_QT5_MINOR_VERSION 9)
-set(ASTARTE_DEVICE_SDK_QT5_RELEASE_VERSION 91)
+set(ASTARTE_DEVICE_SDK_QT5_RELEASE_VERSION 92)
 option(ASTARTE_DEVICE_SDK_QT5_DEVELOPMENT_RELEASE "Must be ON unless we're releasing" ON)
 
 option(ENABLE_WERROR "Enables WError. Always enable when developing, and disable when releasing." OFF)
