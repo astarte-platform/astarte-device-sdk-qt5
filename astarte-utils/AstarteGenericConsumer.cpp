@@ -61,7 +61,7 @@ Hyperspace::ProducerConsumer::ConsumerAbstractAdaptor::DispatchResult AstarteGen
 
         bool mappingMatch = true;
         for (int i = 0; i < inputTokens.size(); ++i) {
-            if (inputTokens.at(i).startsWith("%{")) {
+            if (it.value().at(i).startsWith("%{")) {
                 continue;
             }
 
