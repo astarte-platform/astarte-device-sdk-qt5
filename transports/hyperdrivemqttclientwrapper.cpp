@@ -38,6 +38,9 @@
 
 #define CONNACK_TIMEOUT (2 * 60 * 1000)
 
+#define MIN_RECONNECTION_DELAY 3
+#define MAX_RECONNECTION_DELAY 30
+
 Q_LOGGING_CATEGORY(mqttWrapperDC, "hyperdrive.mqttclientwrapper", DEBUG_MESSAGES_DEFAULT_LEVEL)
 
 namespace Hyperdrive {
@@ -251,9 +254,16 @@ void MQTTClientWrapper::initImpl()
 {
     Q_D(MQTTClientWrapper);
 
+    Hyperdrive::Utils::seedRNG();
+
     auto initMosquitto = [this, d] {
         // Initialize stuff
         d->mosquitto = new HyperdriveMosquittoClient(d, d->hardwareId.constData(), d->cleanSession);
+
+        // Set a randomized reconnect with exponential backoff
+        int randomizedMinDelaySec = Hyperdrive::Utils::randomizedInterval(MIN_RECONNECTION_DELAY, 0.7);
+        int randomizedMaxDelaySec = Hyperdrive::Utils::randomizedInterval(MAX_RECONNECTION_DELAY, 0.2);
+        d->mosquitto->reconnect_delay_set(randomizedMinDelaySec, randomizedMaxDelaySec, true);
 
         // SSL
         if (!d->pathToCA.isEmpty() && !d->pathToPKey.isEmpty() && !d->pathToCertificate.isEmpty()) {
