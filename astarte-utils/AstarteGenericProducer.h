@@ -50,6 +50,8 @@ public:
     void setMappingToExpiry(const QHash<QByteArray, int> &m_mappingToExpiry);
     void setMappingToAllowUnset(const QHash<QByteArray, bool> &mappingToAllowUnset);
 
+    QHash<QByteArray, QByteArrayList> mappingToTokens() const;
+
 protected:
     virtual void populateTokensAndStates() override final;
     virtual Hyperspace::ProducerConsumer::ProducerAbstractInterface::DispatchResult dispatch(int i, const QByteArray &payload, const QList<QByteArray> &inputTokens) override final;
