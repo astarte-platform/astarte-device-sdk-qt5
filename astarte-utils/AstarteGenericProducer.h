@@ -39,6 +39,8 @@ public:
 
     bool sendData(const QVariant &value, const QByteArray &target,
             const QDateTime &timestamp = QDateTime(), const QVariantHash &metadata = QVariantHash());
+    bool sendData(const QVariantHash &value, const QByteArray &target,
+            const QDateTime &timestamp = QDateTime(), const QVariantHash &metadata = QVariantHash());
     bool unsetPath(const QByteArray &target);
 
     void setMappingToTokens(const QHash<QByteArray, QByteArrayList> &mappingToTokens);
