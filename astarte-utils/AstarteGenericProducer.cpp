@@ -36,6 +36,11 @@ QHash<QByteArray, QByteArrayList> AstarteGenericProducer::mappingToTokens() cons
     return m_mappingToTokens;
 }
 
+QHash<QByteArray, QVariant::Type> AstarteGenericProducer::mappingToType() const
+{
+    return m_mappingToType;
+}
+
 bool AstarteGenericProducer::sendData(const QVariant &value, const QByteArray &target,
         const QDateTime &timestamp, const QVariantHash &metadata)
 {

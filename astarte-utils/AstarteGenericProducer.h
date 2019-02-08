@@ -51,6 +51,7 @@ public:
     void setMappingToAllowUnset(const QHash<QByteArray, bool> &mappingToAllowUnset);
 
     QHash<QByteArray, QByteArrayList> mappingToTokens() const;
+    QHash<QByteArray, QVariant::Type> mappingToType() const;
 
 protected:
     virtual void populateTokensAndStates() override final;
