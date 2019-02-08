@@ -47,6 +47,11 @@ public:
     bool sendData(const QByteArray &interface, const QByteArray &path, const QVariant &value,
             const QVariantHash &metadata);
 
+    bool sendData(const QByteArray &interface, const QVariantHash &value, const QDateTime &timestamp = QDateTime(),
+            const QVariantHash &metadata = QVariantHash());
+
+    bool sendData(const QByteArray &interface, const QVariantHash &value, const QVariantHash &metadata);
+
     bool sendUnset(const QByteArray &interface, const QByteArray &path);
 
 Q_SIGNALS:
