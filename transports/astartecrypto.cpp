@@ -96,7 +96,15 @@ void CryptoPrivate::init_openssl()
 void CryptoPrivate::cleanup_openssl()
 {
     CRYPTO_cleanup_all_ex_data();
+
+#if OPENSSL_VERSION_NUMBER >= 0x10100000L \
+    && !defined(LIBRESSL_VERSION_NUMBER)
+    // OpenSSL libraries handle thread init and deinit
+    // https://github.com/openssl/openssl/pull/1048
+#else
     ERR_remove_thread_state(0);
+#endif
+
     EVP_cleanup();
 }
 
