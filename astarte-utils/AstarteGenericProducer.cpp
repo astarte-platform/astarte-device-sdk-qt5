@@ -31,6 +31,16 @@ AstarteGenericProducer::~AstarteGenericProducer()
 {
 }
 
+QHash<QByteArray, QByteArrayList> AstarteGenericProducer::mappingToTokens() const
+{
+    return m_mappingToTokens;
+}
+
+QHash<QByteArray, QVariant::Type> AstarteGenericProducer::mappingToType() const
+{
+    return m_mappingToType;
+}
+
 bool AstarteGenericProducer::sendData(const QVariant &value, const QByteArray &target,
         const QDateTime &timestamp, const QVariantHash &metadata)
 {
@@ -115,6 +125,18 @@ bool AstarteGenericProducer::sendData(const QVariant &value, const QByteArray &t
 
     qWarning() << "Can't find valid mapping for " << target;
     return false;
+}
+
+bool AstarteGenericProducer::sendData(const QVariantHash &value, const QByteArray &target, const QDateTime &timestamp, const QVariantHash &metadata)
+{
+    // TODO: verify path match
+    QHash<QByteArray, QByteArray> attributes;
+    attributes.insert("interfaceType", QByteArray::number(static_cast<int>(m_interfaceType)));
+    // TODO: handle reliability, retention and expiry
+
+    sendDataOnEndpoint(value, target, attributes, timestamp, metadata);
+
+    return true;
 }
 
 bool AstarteGenericProducer::unsetPath(const QByteArray &target)

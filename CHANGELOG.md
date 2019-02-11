@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 
 ## [0.10.0-rc.0] - Unreleased
+### Added
+- Allow sending data from interfaces with object aggregation
 
 ## [0.10.0-beta.3] - 2018-12-19
 
