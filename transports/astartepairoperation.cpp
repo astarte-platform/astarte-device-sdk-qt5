@@ -72,6 +72,7 @@ void PairOperation::performPairing()
     if (!csr.open(QIODevice::ReadOnly)) {
         qCWarning(astartePairOperationDC) << "Could not open CSR for reading! Aborting.";
         setFinishedWithError(Hemera::Literals::literal(Hemera::Literals::Errors::notFound()), QStringLiteral("Could not open CSR for reading! Aborting."));
+        return;
     }
 
     QByteArray csrBytes = csr.readAll();
