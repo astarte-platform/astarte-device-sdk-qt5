@@ -17,6 +17,7 @@
  */
 
 #include "AstarteDeviceSDK.h"
+#include "Utils.h"
 
 #include <astartetransport.h>
 
@@ -284,6 +285,63 @@ bool AstarteDeviceSDK::sendData(const QByteArray &interface, const QByteArray &p
 bool AstarteDeviceSDK::sendData(const QByteArray &interface, const QByteArray &path, const QVariant &value, const QVariantHash &metadata)
 {
     return sendData(interface, path, value, QDateTime(), metadata);
+}
+
+bool AstarteDeviceSDK::sendData(const QByteArray &interface, const QVariantHash &value, const QVariantHash &metadata)
+{
+    return sendData(interface, value, QDateTime(), metadata);
+}
+
+bool AstarteDeviceSDK::sendData(const QByteArray &interface, const QVariantHash &value, const QDateTime &timestamp,
+                                const QVariantHash &metadata)
+{
+    if (!m_producers.contains(interface)) {
+        qCWarning(astarteDeviceSDKDC) << "No producers for interface " << interface;
+        return false;
+    }
+    // Verify mappings
+    QHash< QByteArray, QVariant::Type > mappingToType = m_producers.value(interface)->mappingToType();
+    if (mappingToType.size() != value.size()) {
+        qCWarning(astarteDeviceSDKDC) << "You have to provide exactly all the values of the aggregated interface!";
+        return false;
+    }
+
+    QStringList pathTokens = value.constBegin().key().mid(1).split(QStringLiteral("/"));
+    pathTokens.removeLast();
+
+    QString trailingPath;
+    if (pathTokens.size() > 0) {
+        trailingPath = QStringLiteral("/%1").arg(pathTokens.join(QStringLiteral("/")));
+    }
+
+    // There's a number of checks we have to do. Let's build a map first
+    QHash<QByteArray, QByteArrayList> tokens;
+    for (QVariantHash::const_iterator i = value.constBegin(); i != value.constEnd(); ++i) {
+        QByteArrayList singleTokens;
+        for (const QString &token : i.key().mid(1).split(QStringLiteral("/"))) {
+            singleTokens.append(token.toLatin1());
+        }
+        tokens.insert(i.key().toLatin1(), singleTokens);
+    }
+    if (!Utils::verifySplitTokenMatch(tokens, m_producers.value(interface)->mappingToTokens())) {
+        qCWarning(astarteDeviceSDKDC) << "Provided hash does not match interface definition!";
+        return false;
+    }
+
+    QVariantHash normalizedValues;
+    for (QVariantHash::const_iterator i = value.constBegin(); i != value.constEnd(); ++i) {
+        // TODO: check that types match wath we expect
+        if (!trailingPath.isEmpty() && !i.key().startsWith(trailingPath)) {
+            qCWarning(astarteDeviceSDKDC) << "Your path is malformed - this probably means you mistyped your parameters." << i.key() << "was expected to start with" << trailingPath;
+            return false;
+        }
+        QString normalizedPath = i.key();
+        normalizedPath.remove(0, trailingPath.size() + 1);
+        normalizedValues.insert(normalizedPath, i.value());
+    }
+    // If we got here, verification was ok. Let's go.
+
+    return m_producers.value(interface)->sendData(normalizedValues, trailingPath.toLatin1(), timestamp, metadata);
 }
 
 bool AstarteDeviceSDK::sendUnset(const QByteArray &interface, const QByteArray &path)

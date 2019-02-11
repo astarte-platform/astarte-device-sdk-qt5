@@ -137,10 +137,11 @@ int ProducerAbstractInterface::dispatchIndex(const QList<QByteArray> &inputToken
 
 void ProducerAbstractInterface::sendRawDataOnEndpoint(const QByteArray &value, const QByteArray &target, const QHash<QByteArray, QByteArray> &attributes)
 {
-    if (!target.startsWith('/') || target.endsWith('/') || target.contains("//")
+    if (!target.isEmpty() &&
+            (!target.startsWith('/') || target.endsWith('/') || target.contains("//")
             || target.contains(";") || target.contains('\n') || target.contains('\r')
             || target.contains('\b') || target.contains('\t') || target.contains('\v')
-            || target.contains('\f') || target.contains('+') || target.contains('#') ) {
+            || target.contains('\f') || target.contains('+') || target.contains('#') )) {
         qWarning() << "ProducerAbstractInterface: invalid target: " << target << ". discarding value: " << value;
         return;
     }
@@ -246,6 +247,21 @@ void ProducerAbstractInterface::sendDataOnEndpoint(const QDateTime &value, const
 {
     Util::BSONSerializer serializer;
     serializer.appendDateTime("v", value);
+    if (!timestamp.isNull() && timestamp.isValid()) {
+        serializer.appendDateTime("t", timestamp);
+    }
+    if (!metadata.isEmpty()) {
+        serializer.appendDocument("m", metadata);
+    }
+    serializer.appendEndOfDocument();
+    sendRawDataOnEndpoint(serializer.document(), target, attributes);
+}
+
+void ProducerAbstractInterface::sendDataOnEndpoint(const QVariantHash &value, const QByteArray &target,
+        const QHash<QByteArray, QByteArray> &attributes, const QDateTime &timestamp, const QVariantHash &metadata)
+{
+    Util::BSONSerializer serializer;
+    serializer.appendDocument("v", value);
     if (!timestamp.isNull() && timestamp.isValid()) {
         serializer.appendDateTime("t", timestamp);
     }

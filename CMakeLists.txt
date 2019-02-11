@@ -107,6 +107,7 @@ include_directories(
 # sources
 set(astartedevicesdk_SRCS
     astarte-device-sdk/AstarteDeviceSDK.cpp
+    astarte-device-sdk/Utils.cpp
 
     astarte-transport/astartetransport.cpp
     astarte-transport/astartetransportcache.cpp
