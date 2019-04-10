@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [0.10.0-rc.1] - 2019-04-10
+### Fixed
+- Endpoint pattern regexp now allows underscores.
+
 ## [0.10.0-rc.0] - 2019-04-03
 ### Added
 - Allow sending data from interfaces with object aggregation
