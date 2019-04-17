@@ -13,7 +13,7 @@ option(ASTARTE_DEVICE_SDK_QT5_DEVELOPMENT_RELEASE "Must be ON unless we're relea
 
 option(ENABLE_WERROR "Enables WError. Always enable when developing, and disable when releasing." OFF)
 
-option(ENABLE_ASTARTE_DEVICE_SDK_QT5_TEST_CODEPATHS "Enable specific codepaths needed for autotests. As they pose a potential security threat, disable when building a release build." ON)
+option(ENABLE_ASTARTE_DEVICE_SDK_QT5_TEST_CODEPATHS "Enable specific codepaths needed for autotests. As they pose a potential security threat, disable when building a release build." OFF)
 
 #################################################################################################
 
