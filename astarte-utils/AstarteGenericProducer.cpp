@@ -148,9 +148,35 @@ bool AstarteGenericProducer::unsetPath(const QByteArray &target)
         return false;
     }
 
-    if (m_mappingToAllowUnset.value(target)) {
-        sendRawDataOnEndpoint(QByteArray(), target);
-        return true;
+    QByteArrayList targetTokens = target.split('/');
+    QHash<QByteArray, bool>::const_iterator it;
+
+    for (it = m_mappingToAllowUnset.constBegin(); it != m_mappingToAllowUnset.constEnd(); it++) {
+        if (!it.value()) {
+            continue;
+        }
+
+        // Split and validate
+        QByteArrayList mappingTokens = it.key().split('/');
+        if (mappingTokens.size() != targetTokens.size()) {
+            continue;
+        }
+        bool mappingMatches = true;
+        for (int i = 0; i < mappingTokens.size(); ++i) {
+            if (mappingTokens.at(i).startsWith("%{")) {
+                // Assume it is valid
+                continue;
+            }
+            if (mappingTokens.at(i) != targetTokens.at(i)) {
+                mappingMatches = false;
+                break;
+            }
+        }
+
+        if (mappingMatches) {
+            sendRawDataOnEndpoint(QByteArray(), target);
+            return true;
+        }
     }
 
     qWarning() << "Trying to unset " << target << "without allow_unset";
