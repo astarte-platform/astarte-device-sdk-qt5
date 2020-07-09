@@ -22,9 +22,9 @@
 #include <HemeraCore/AsyncInitObject>
 
 #include <HyperspaceProducerConsumer/ProducerAbstractInterface>
+#include <astartetransport.h>
 
 namespace Hyperdrive {
-class AstarteTransport;
 class Interface;
 }
 
@@ -37,6 +37,16 @@ class AstarteDeviceSDK : public Hemera::AsyncInitObject
     Q_OBJECT
 
 public:
+    enum ConnectionStatus {
+        UnknownStatus = Hyperdrive::AstarteTransport::UnknownStatus,
+        DisconnectedStatus = Hyperdrive::AstarteTransport::DisconnectedStatus,
+        ConnectedStatus = Hyperdrive::AstarteTransport::ConnectedStatus,
+        ConnectingStatus = Hyperdrive::AstarteTransport::ConnectingStatus,
+        DisconnectingStatus = Hyperdrive::AstarteTransport::DisconnectingStatus,
+        ReconnectingStatus = Hyperdrive::AstarteTransport::ReconnectingStatus
+    };
+    Q_ENUM(AstarteDeviceSDK::ConnectionStatus)
+
     AstarteDeviceSDK(const QString &configurationPath, const QString &interfacesDir,
                      const QByteArray &hardwareId, QObject *parent = nullptr);
     ~AstarteDeviceSDK();
@@ -54,9 +64,12 @@ public:
 
     bool sendUnset(const QByteArray &interface, const QByteArray &path);
 
+    ConnectionStatus connectionStatus() const;
+
 Q_SIGNALS:
     void unsetReceived(const QByteArray &interface, const QByteArray &path);
     void dataReceived(const QByteArray &interface, const QByteArray &path, const QVariant &value);
+    void connectionStatusChanged();
 
 protected Q_SLOTS:
 
