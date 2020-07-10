@@ -72,6 +72,7 @@ void AstarteDeviceSDK::initImpl()
             setReady();
         }
     });
+    connect(m_astarteTransport, &Hyperdrive::AstarteTransport::connectionStatusChanged, this, &AstarteDeviceSDK::connectionStatusChanged);
 
     QFile schemaFile(QStringLiteral("%1/interface.json").arg(
                 QLatin1String(Hyperdrive::StaticConfig::transportAstarteDataDir())));
@@ -362,4 +363,13 @@ void AstarteDeviceSDK::unsetValue(const QByteArray &interface, const QByteArray 
 void AstarteDeviceSDK::receiveValue(const QByteArray &interface, const QByteArray &path, const QVariant &value)
 {
     Q_EMIT dataReceived(interface, path, value);
+}
+
+AstarteDeviceSDK::ConnectionStatus AstarteDeviceSDK::connectionStatus() const
+{
+    if (!m_astarteTransport) {
+        return AstarteDeviceSDK::DisconnectedStatus;
+    }
+
+    return static_cast<AstarteDeviceSDK::ConnectionStatus>(m_astarteTransport->connectionStatus());
 }

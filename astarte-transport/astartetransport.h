@@ -48,6 +48,16 @@ class AstarteTransport : public Hemera::AsyncInitObject
     Q_OBJECT
 
 public:
+    enum ConnectionStatus {
+        UnknownStatus = MQTTClientWrapper::UnknownStatus,
+        DisconnectedStatus = MQTTClientWrapper::DisconnectedStatus,
+        ConnectedStatus = MQTTClientWrapper::ConnectedStatus,
+        ConnectingStatus = MQTTClientWrapper::ConnectingStatus,
+        DisconnectingStatus = MQTTClientWrapper::DisconnectingStatus,
+        ReconnectingStatus = MQTTClientWrapper::ReconnectingStatus
+    };
+    Q_ENUM(Hyperdrive::AstarteTransport::ConnectionStatus)
+
     AstarteTransport(const QString &configurationPath, QObject *parent = Q_NULLPTR);
     virtual ~AstarteTransport();
 
@@ -59,8 +69,11 @@ public:
     QHash< QByteArray, Hyperdrive::Interface > introspection() const;
     void setIntrospection(const QHash< QByteArray, Hyperdrive::Interface > &introspection);
 
+    ConnectionStatus connectionStatus() const;
+
 Q_SIGNALS:
     void introspectionChanged();
+    void connectionStatusChanged();
     void waveReceived(const QByteArray &interface, const Hyperspace::Wave &wave);
 
 protected:

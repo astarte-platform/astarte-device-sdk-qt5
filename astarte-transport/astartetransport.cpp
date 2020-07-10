@@ -407,6 +407,8 @@ void AstarteTransport::forceNewPairing()
 
 void AstarteTransport::onStatusChanged(MQTTClientWrapper::Status status)
 {
+    emit connectionStatusChanged();
+
     if (status == MQTTClientWrapper::ConnectedStatus) {
         // We're connected, stop the reboot timer
         qCDebug(astarteTransportDC) << "Connected, stopping the reboot timer";
@@ -429,6 +431,15 @@ void AstarteTransport::onStatusChanged(MQTTClientWrapper::Status status)
             m_rebootTimer->start();
         }
     }
+}
+
+AstarteTransport::ConnectionStatus AstarteTransport::connectionStatus() const
+{
+    if (m_mqttBroker.isNull()) {
+        return DisconnectedStatus;
+    }
+
+    return static_cast<ConnectionStatus>(m_mqttBroker->status());
 }
 
 void AstarteTransport::handleConnectionFailed()
