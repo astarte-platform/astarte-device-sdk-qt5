@@ -109,6 +109,7 @@ void DefaultCredentialsSecretProvider::sendRegistrationRequest()
     QByteArray serializedPayload = QJsonDocument(payload).toJson(QJsonDocument::Compact);
 
     QNetworkRequest req;
+    req.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
     req.setSslConfiguration(m_sslConfiguration);
     req.setHeader(QNetworkRequest::ContentTypeHeader, QStringLiteral("application/json"));
     req.setRawHeader("Authorization", "Bearer " + m_agentKey);

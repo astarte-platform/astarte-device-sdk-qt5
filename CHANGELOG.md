@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - Expose connection status in the SDK.
 - Expose a way to set the MQTT keepalive.
+- Make the HTTP client follow redirects.
 
 ## [0.11.1] - 2020-05-19
 
