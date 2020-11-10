@@ -241,7 +241,7 @@ QVariant::Type AstarteDeviceSDK::typeStringToVariantType(const QString &typeStri
         dataType = QVariant::String;
     } else if (typeString == QStringLiteral("boolean")) {
         dataType = QVariant::Bool;
-    } else if (typeString == QStringLiteral("binary")) {
+    } else if (typeString == QStringLiteral("binaryblob")) {
         dataType = QVariant::ByteArray;
     } else {
         qCWarning(astarteDeviceSDKDC) << QStringLiteral("Type %1 unspecified!").arg(typeString);
