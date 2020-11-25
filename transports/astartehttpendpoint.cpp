@@ -59,6 +59,7 @@ void HTTPEndpointPrivate::connectToEndpoint()
     QUrl infoEndpoint = endpoint;
     infoEndpoint.setPath(QStringLiteral("%1/devices/%2").arg(endpoint.path()).arg(QString::fromLatin1(hardwareId)));
     QNetworkRequest req(infoEndpoint);
+    req.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
     req.setSslConfiguration(sslConfiguration);
     req.setRawHeader("Authorization", "Bearer " + credentialsSecretProvider->credentialsSecret());
     req.setRawHeader("X-Astarte-Transport-Provider", "Astarte Device SDK Qt5");
@@ -254,6 +255,7 @@ QNetworkReply *HTTPEndpoint::sendRequest(const QString& relativeEndpoint, const 
     Q_D(const HTTPEndpoint);
     QNetworkRequest req;
     if (authenticationDomain == Crypto::DeviceAuthenticationDomain) {
+        req.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
         // Build the endpoint
         QUrl target = d->endpoint;
         target.setPath(QStringLiteral("%1/devices/%2%3").arg(d->endpoint.path()).arg(QString::fromLatin1(d->hardwareId)).arg(relativeEndpoint));
