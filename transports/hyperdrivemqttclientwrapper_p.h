@@ -41,7 +41,7 @@ public:
                                                    , mosquitto(nullptr)
                                                    , status(MQTTClientWrapper::DisconnectedStatus)
                                                    , lwtRetained(false)
-                                                   , keepAlive(5 * 60)
+                                                   , keepAlive(60)
                                                    , cleanSession(false)
                                                    , sessionPresent(false)
                                                    , publishQoS(1)

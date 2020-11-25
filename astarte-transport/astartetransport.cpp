@@ -58,6 +58,7 @@
 
 #define CONNECTION_RETRY_INTERVAL 15000
 #define PAIRING_RETRY_INTERVAL (5 * 60 * 1000)
+#define DEFAULT_KEEPALIVE_SECONDS 60
 
 #define METHOD_WRITE "WRITE"
 #define METHOD_ERROR "ERROR"
@@ -75,6 +76,7 @@ AstarteTransport::AstarteTransport(const QString &configurationPath, QObject* pa
     , m_rebootTimer(new QTimer(this))
     , m_rebootWhenConnectionFails(false)
     , m_rebootDelayMinutes(600)
+    , m_keepAliveSeconds(DEFAULT_KEEPALIVE_SECONDS)
     , m_inFlightIntrospectionMessageId(-1)
 {
     qRegisterMetaType<MQTTClientWrapper::Status>();
@@ -140,6 +142,8 @@ void AstarteTransport::initImpl()
         int randomizedRebootDelayms = Hyperdrive::Utils::randomizedInterval(m_rebootDelayMinutes * 60 * 1000, 0.1);
         m_rebootTimer->setInterval(randomizedRebootDelayms);
 
+        m_keepAliveSeconds = settings.value(QStringLiteral("keepAliveSeconds"), DEFAULT_KEEPALIVE_SECONDS).toInt();
+
         if (m_rebootWhenConnectionFails) {
             qCDebug(astarteTransportDC) << "Activating the reboot timer with delay " << (randomizedRebootDelayms / (60 * 1000)) << " minutes";
             m_rebootTimer->start();
@@ -204,7 +208,7 @@ void AstarteTransport::setupMqtt()
     }
 
     connect(m_mqttBroker->init(), &Hemera::Operation::finished, this, [this] {
-        m_mqttBroker->setKeepAlive(60);
+        m_mqttBroker->setKeepAlive(m_keepAliveSeconds);
         m_mqttBroker->connectToBroker();
     });
     connect(m_mqttBroker, &MQTTClientWrapper::statusChanged, this, &AstarteTransport::onStatusChanged);

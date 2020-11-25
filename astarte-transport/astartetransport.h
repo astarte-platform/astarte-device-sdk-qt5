@@ -113,6 +113,7 @@ private:
     bool m_synced;
     bool m_rebootWhenConnectionFails;
     int m_rebootDelayMinutes;
+    int m_keepAliveSeconds;
     int m_inFlightIntrospectionMessageId;
 };
 }
