@@ -318,7 +318,6 @@ Hyperdrive::MQTTClientWrapper *HTTPEndpoint::createMqttClientWrapper()
     c->setCleanSession(false);
     c->setPublishQoS(Hyperdrive::MQTTClientWrapper::AtMostOnceQoS);
     c->setSubscribeQoS(Hyperdrive::MQTTClientWrapper::AtMostOnceQoS);
-    c->setKeepAlive(300);
     c->setIgnoreSslErrors(d->ignoreSslErrors);
 
     // SSL

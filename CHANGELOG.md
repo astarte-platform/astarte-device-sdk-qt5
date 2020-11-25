@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [1.0.0-beta.1] - Unreleased
 ### Added
 - Expose connection status in the SDK.
+- Expose a way to set the MQTT keepalive.
 
 ## [0.11.1] - 2020-05-19
 

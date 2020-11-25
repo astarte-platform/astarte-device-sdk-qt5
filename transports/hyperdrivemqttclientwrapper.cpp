@@ -331,7 +331,7 @@ bool MQTTClientWrapper::connectToBroker()
 
             qCInfo(mqttWrapperDC) << "Starting mosquitto connection" << d->serverUrl.host() << d->serverUrl.port();
 
-            if ((rc = d->mosquitto->connect_async(qstrdup(d->serverUrl.host().toLatin1().constData()), d->serverUrl.port(), 60)) != MOSQ_ERR_SUCCESS) {
+            if ((rc = d->mosquitto->connect_async(qstrdup(d->serverUrl.host().toLatin1().constData()), d->serverUrl.port(), d->keepAlive)) != MOSQ_ERR_SUCCESS) {
                 qCWarning(mqttWrapperDC) << "Could not initiate async mosquitto connection! Return code " << rc;
                 Q_EMIT connectionFailed();
                 return false;

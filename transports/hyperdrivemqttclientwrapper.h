@@ -73,7 +73,7 @@ public:
     void setIgnoreSslErrors(bool ignoreSslErrors);
     /// Note: this will only work if set before initializing the Client.
     void setCleanSession(bool cleanSession = true);
-    void setKeepAlive(quint64 seconds = 300);
+    void setKeepAlive(quint64 seconds);
     void setLastWill(const QByteArray &topic, const QByteArray &message, MQTTQoS qos, bool retained = false);
 
     int publish(const QByteArray &topic, const QByteArray &payload, MQTTQoS qos = DefaultQoS, bool retained = false);
