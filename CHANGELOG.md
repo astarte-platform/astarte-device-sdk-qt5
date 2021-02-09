@@ -10,7 +10,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Expose a way to set the MQTT keepalive.
 - Make the HTTP client follow redirects.
 
-## [0.11.1] - 2020-05-19
+## [0.11.4] - 2021-01-26
+### Fixed
+- Use the correct `binaryblob` type instead of `binary`.
+
+## [0.11.3] - 2020-09-24
+
+## [0.11.2] - 2020-08-04
+
+## [0.11.1] - 2020-05-18
 
 ## [0.11.0] - 2020-04-13
 
