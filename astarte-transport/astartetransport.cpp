@@ -246,12 +246,10 @@ void AstarteTransport::setupClientSubscriptions()
         return;
     }
     // Setup subscriptions to control interface
-    m_mqttBroker->subscribe(m_mqttBroker->rootClientTopic() + "/control/#", MQTTClientWrapper::ExactlyOnceQoS);
+    m_mqttBroker->subscribe(m_mqttBroker->rootClientTopic() + "/control/consumer/properties", MQTTClientWrapper::ExactlyOnceQoS);
     // Setup subscriptions to interfaces where we can receive data
     for (QHash< QByteArray, Hyperdrive::Interface >::const_iterator i = introspection().constBegin(); i != introspection().constEnd(); ++i) {
         if (i.value().interfaceQuality() == Interface::Quality::Consumer) {
-            // Subscribe to the interface itself
-            m_mqttBroker->subscribe(m_mqttBroker->rootClientTopic() + "/" + i.value().interface(), MQTTClientWrapper::ExactlyOnceQoS);
             // Subscribe to the interface properties
             m_mqttBroker->subscribe(m_mqttBroker->rootClientTopic() + "/" + i.value().interface() + "/#", MQTTClientWrapper::ExactlyOnceQoS);
         }
