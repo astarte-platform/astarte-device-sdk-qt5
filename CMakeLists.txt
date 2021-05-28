@@ -6,14 +6,14 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake/mo
 
 #################################################################################################
 # Modify these variables to what suits the application best. Remember, no dashes in the version!
-set(ASTARTE_DEVICE_SDK_QT5_ABI_VERSION 0)
-set(ASTARTE_DEVICE_SDK_QT5_MINOR_VERSION 11)
-set(ASTARTE_DEVICE_SDK_QT5_RELEASE_VERSION 90)
-option(ASTARTE_DEVICE_SDK_QT5_DEVELOPMENT_RELEASE "Must be ON unless we're releasing" ON)
+set(ASTARTE_DEVICE_SDK_QT5_ABI_VERSION 1)
+set(ASTARTE_DEVICE_SDK_QT5_MINOR_VERSION 0)
+set(ASTARTE_DEVICE_SDK_QT5_RELEASE_VERSION 0)
+option(ASTARTE_DEVICE_SDK_QT5_DEVELOPMENT_RELEASE "Must be ON unless we're releasing" OFF)
 
-option(ENABLE_WERROR "Enables WError. Always enable when developing, and disable when releasing." ON)
+option(ENABLE_WERROR "Enables WError. Always enable when developing, and disable when releasing." OFF)
 
-option(ENABLE_ASTARTE_DEVICE_SDK_QT5_TEST_CODEPATHS "Enable specific codepaths needed for autotests. As they pose a potential security threat, disable when building a release build." ON)
+option(ENABLE_ASTARTE_DEVICE_SDK_QT5_TEST_CODEPATHS "Enable specific codepaths needed for autotests. As they pose a potential security threat, disable when building a release build." OFF)
 
 #################################################################################################
 

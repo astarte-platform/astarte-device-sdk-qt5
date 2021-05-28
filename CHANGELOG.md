@@ -4,7 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [1.0.0-beta.1] - Unreleased
+## [1.0.0-rc.0] - 2021-05-10
+### Changed
+- Minor optimizations to MQTT subscribes.
+
+## [1.0.0-beta.2] - 2021-03-25
+
+## [1.0.0-beta.1] - 2021-02-16
 ### Added
 - Expose connection status in the SDK.
 - Expose a way to set the MQTT keepalive.
