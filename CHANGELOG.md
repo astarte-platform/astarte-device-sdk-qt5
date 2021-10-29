@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Make the SDK build with Qt versions earlier than 5.6. http redirects will not be supported on
   those versions.
 - Rename `agentKey` to `pairingJwt` in the configuration, deprecating the old name.
+- Deprecate `endpoint` in the configuration, introduce `pairingUrl` and `realm` in the configuration
+  to replace it.
 
 ## [1.0.0] - 2021-06-28
 
