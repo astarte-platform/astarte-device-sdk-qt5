@@ -61,9 +61,9 @@ QByteArray DefaultCredentialsSecretProvider::credentialsSecret() const
     return m_credentialsSecret;
 }
 
-void DefaultCredentialsSecretProvider::setAgentKey(const QByteArray &agentKey)
+void DefaultCredentialsSecretProvider::setPairingJwt(const QByteArray &pairingJwt)
 {
-    m_agentKey = agentKey;
+    m_pairingJwt = pairingJwt;
 }
 
 void DefaultCredentialsSecretProvider::setEndpointConfigurationPath(const QString &endpointConfigurationPath)
@@ -114,7 +114,7 @@ void DefaultCredentialsSecretProvider::sendRegistrationRequest()
     #endif
     req.setSslConfiguration(m_sslConfiguration);
     req.setHeader(QNetworkRequest::ContentTypeHeader, QStringLiteral("application/json"));
-    req.setRawHeader("Authorization", "Bearer " + m_agentKey);
+    req.setRawHeader("Authorization", "Bearer " + m_pairingJwt);
     QUrl reqUrl = m_endpointUrl;
     reqUrl.setPath(m_endpointUrl.path() + QStringLiteral("/agent/devices"));
     req.setUrl(reqUrl);
