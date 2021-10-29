@@ -156,7 +156,7 @@ void HTTPEndpointPrivate::ensureCredentialsSecret()
 {
     Q_Q(HTTPEndpoint);
     DefaultCredentialsSecretProvider *provider = new DefaultCredentialsSecretProvider(q);
-    provider->setAgentKey(agentKey);
+    provider->setPairingJwt(pairingJwt);
     provider->setEndpointConfigurationPath(q->pathToAstarteEndpointConfiguration(endpointName));
     provider->setEndpointUrl(endpoint);
     provider->setHardwareId(hardwareId);
@@ -201,7 +201,14 @@ void HTTPEndpoint::initImpl()
 
     QSettings settings(d->configurationFile, QSettings::IniFormat);
     settings.beginGroup(QStringLiteral("AstarteTransport")); {
-        d->agentKey = settings.value(QStringLiteral("agentKey")).toString().toLatin1();
+        if (settings.contains(QStringLiteral("pairingJwt"))) {
+          d->pairingJwt = settings.value(QStringLiteral("pairingJwt")).toString().toLatin1();
+        } else {
+          qCWarning(astarteHttpEndpointDC)
+              << "agentKey is deprecated and will be removed in a future release."
+              << "Update your configuration using pairingJwt instead of agentKey";
+          d->pairingJwt = settings.value(QStringLiteral("agentKey")).toString().toLatin1();
+        }
         d->brokerCa = settings.value(QStringLiteral("brokerCa"), QStringLiteral("/etc/ssl/certs/ca-certificates.crt")).toString();
         d->ignoreSslErrors = settings.value(QStringLiteral("ignoreSslErrors"), false).toBool();
         if (settings.contains(QStringLiteral("pairingCa"))) {

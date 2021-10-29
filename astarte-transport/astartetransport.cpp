@@ -134,7 +134,21 @@ void AstarteTransport::initImpl()
             }
         });
 
-        m_astarteEndpoint = new Astarte::HTTPEndpoint(m_configurationPath, m_persistencyDir, settings.value(QStringLiteral("endpoint")).toUrl(), QSslConfiguration::defaultConfiguration(), this);
+        QUrl endpointUrl;
+        if (settings.contains(QStringLiteral("pairingUrl")) && settings.contains(QStringLiteral("realm"))) {
+            QString pairingUrl = settings.value(QStringLiteral("pairingUrl")).toString();
+            QString realm = settings.value(QStringLiteral("realm")).toString();
+            endpointUrl = QUrl(QStringLiteral("%1/v1/%2").arg(pairingUrl, realm));
+        } else {
+          qCWarning(astarteTransportDC)
+              << "endpoint is deprecated and will be removed in a future release."
+              << "Update your configuration using pairingJwt (which should point to the"
+              << "base Pairing URL, up to and excluding /v1) and realm (which should contain"
+              << "the realm name)";
+          endpointUrl = settings.value(QStringLiteral("endpoint")).toUrl();
+        }
+
+        m_astarteEndpoint = new Astarte::HTTPEndpoint(m_configurationPath, m_persistencyDir, endpointUrl, QSslConfiguration::defaultConfiguration(), this);
 
         m_rebootWhenConnectionFails = settings.value(QStringLiteral("rebootWhenConnectionFails"), false).toBool();
         m_rebootDelayMinutes = settings.value(QStringLiteral("rebootDelayMinutes"), 600).toInt();

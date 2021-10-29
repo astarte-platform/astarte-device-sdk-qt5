@@ -38,7 +38,7 @@ public:
 
     QByteArray credentialsSecret() const override;
 
-    void setAgentKey(const QByteArray &agentKey);
+    void setPairingJwt(const QByteArray &pairingJwt);
     void setEndpointConfigurationPath(const QString &endpointConfigurationPath);
     void setEndpointUrl(const QUrl &endpointUrl);
     void setHardwareId(const QByteArray &hardwareId);
@@ -50,7 +50,7 @@ private slots:
     void retryRegistrationLater();
 
 private:
-    QByteArray m_agentKey;
+    QByteArray m_pairingJwt;
     QByteArray m_hardwareId;
     QNetworkAccessManager *m_nam;
     QSslConfiguration m_sslConfiguration;
