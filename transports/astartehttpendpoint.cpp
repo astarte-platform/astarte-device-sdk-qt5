@@ -59,7 +59,9 @@ void HTTPEndpointPrivate::connectToEndpoint()
     QUrl infoEndpoint = endpoint;
     infoEndpoint.setPath(QStringLiteral("%1/devices/%2").arg(endpoint.path()).arg(QString::fromLatin1(hardwareId)));
     QNetworkRequest req(infoEndpoint);
+    #if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
     req.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
+    #endif
     req.setSslConfiguration(sslConfiguration);
     req.setRawHeader("Authorization", "Bearer " + credentialsSecretProvider->credentialsSecret());
     req.setRawHeader("X-Astarte-Transport-Provider", "Astarte Device SDK Qt5");
@@ -154,7 +156,7 @@ void HTTPEndpointPrivate::ensureCredentialsSecret()
 {
     Q_Q(HTTPEndpoint);
     DefaultCredentialsSecretProvider *provider = new DefaultCredentialsSecretProvider(q);
-    provider->setAgentKey(agentKey);
+    provider->setPairingJwt(pairingJwt);
     provider->setEndpointConfigurationPath(q->pathToAstarteEndpointConfiguration(endpointName));
     provider->setEndpointUrl(endpoint);
     provider->setHardwareId(hardwareId);
@@ -199,7 +201,14 @@ void HTTPEndpoint::initImpl()
 
     QSettings settings(d->configurationFile, QSettings::IniFormat);
     settings.beginGroup(QStringLiteral("AstarteTransport")); {
-        d->agentKey = settings.value(QStringLiteral("agentKey")).toString().toLatin1();
+        if (settings.contains(QStringLiteral("pairingJwt"))) {
+          d->pairingJwt = settings.value(QStringLiteral("pairingJwt")).toString().toLatin1();
+        } else {
+          qCWarning(astarteHttpEndpointDC)
+              << "agentKey is deprecated and will be removed in a future release."
+              << "Update your configuration using pairingJwt instead of agentKey";
+          d->pairingJwt = settings.value(QStringLiteral("agentKey")).toString().toLatin1();
+        }
         d->brokerCa = settings.value(QStringLiteral("brokerCa"), QStringLiteral("/etc/ssl/certs/ca-certificates.crt")).toString();
         d->ignoreSslErrors = settings.value(QStringLiteral("ignoreSslErrors"), false).toBool();
         if (settings.contains(QStringLiteral("pairingCa"))) {
@@ -255,7 +264,9 @@ QNetworkReply *HTTPEndpoint::sendRequest(const QString& relativeEndpoint, const 
     Q_D(const HTTPEndpoint);
     QNetworkRequest req;
     if (authenticationDomain == Crypto::DeviceAuthenticationDomain) {
+        #if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
         req.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
+        #endif
         // Build the endpoint
         QUrl target = d->endpoint;
         target.setPath(QStringLiteral("%1/devices/%2%3").arg(d->endpoint.path()).arg(QString::fromLatin1(d->hardwareId)).arg(relativeEndpoint));
