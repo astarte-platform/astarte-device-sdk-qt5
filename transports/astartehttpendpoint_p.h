@@ -47,7 +47,7 @@ public:
     QNetworkAccessManager *nam;
     QByteArray hardwareId;
 
-    QByteArray agentKey;
+    QByteArray pairingJwt;
     QString brokerCa;
     bool ignoreSslErrors;
 
