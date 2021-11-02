@@ -654,4 +654,22 @@ void AstarteTransport::routeWave(const Hyperspace::Wave &wave, int fd)
     Q_EMIT waveReceived(interface, w);
 }
 
+bool AstarteTransport::connectToBroker()
+{
+  if (m_mqttBroker.isNull()) {
+    return false;
+  }
+
+  return m_mqttBroker->connectToBroker();
+}
+
+bool AstarteTransport::disconnectFromBroker()
+{
+  if (m_mqttBroker.isNull()) {
+    return false;
+  }
+
+  return m_mqttBroker->disconnectFromBroker();
+}
+
 }

@@ -373,3 +373,23 @@ AstarteDeviceSDK::ConnectionStatus AstarteDeviceSDK::connectionStatus() const
 
     return static_cast<AstarteDeviceSDK::ConnectionStatus>(m_astarteTransport->connectionStatus());
 }
+
+bool AstarteDeviceSDK::connectToAstarte()
+{
+  if (!m_astarteTransport) {
+    qDebug() << "Not yet initialized, cannot connect to broker.";
+    return false;
+  }
+
+  return m_astarteTransport->connectToBroker();
+}
+
+bool AstarteDeviceSDK::disconnectFromAstarte()
+{
+  if (!m_astarteTransport) {
+    qDebug() << "Not initialized, cannot disconnect from broker.";
+    return false;
+  }
+
+  return m_astarteTransport->disconnectFromBroker();
+}
