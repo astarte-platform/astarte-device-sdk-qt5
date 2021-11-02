@@ -43,7 +43,7 @@ jobs:
     - name: deps
       run: |
         apt-get -y update
-        apt-get -y install cmake openssl libssl-dev libmosquittopp-dev qtbase5-dev gcc g++
+        DEBIAN_FRONTEND=noninteractive apt-get -y install cmake openssl libssl-dev libmosquittopp-dev qtbase5-dev gcc g++
     - name: Build env information
       run: |
         cat /etc/os-release
