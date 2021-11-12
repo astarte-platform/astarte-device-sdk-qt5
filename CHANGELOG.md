@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [1.0.1] - Unreleased
 ### Added
 - Add public functions for connecting (connectToAstarte) and disconnecting (disconnectFromAstarte).
+- Add support for all array types by adding QList<T> overloads to sendData
 
 ### Changed
 - Make the SDK build with Qt versions earlier than 5.6. http redirects will not be supported on

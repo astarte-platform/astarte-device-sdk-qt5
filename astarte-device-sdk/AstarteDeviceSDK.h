@@ -62,6 +62,9 @@ public:
 
     bool sendData(const QByteArray &interface, const QVariantHash &value, const QVariantHash &metadata);
 
+    template <typename T> bool sendData(const QByteArray &interface, const QByteArray &path, const QList<T> &value,
+            const QDateTime &timestamp = QDateTime(), const QVariantHash &metadata = QVariantHash());
+
     bool sendUnset(const QByteArray &interface, const QByteArray &path);
 
     ConnectionStatus connectionStatus() const;

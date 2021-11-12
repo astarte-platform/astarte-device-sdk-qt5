@@ -272,6 +272,21 @@ void ProducerAbstractInterface::sendDataOnEndpoint(const QVariantHash &value, co
     sendRawDataOnEndpoint(serializer.document(), target, attributes);
 }
 
+void ProducerAbstractInterface::sendDataOnEndpoint(QList<QVariant> value, const QByteArray &target,
+        const QHash<QByteArray, QByteArray> &attributes, const QDateTime &timestamp, const QVariantHash &metadata)
+{
+    Util::BSONSerializer serializer;
+    serializer.appendArray("v", value);
+    if (!timestamp.isNull() && timestamp.isValid()) {
+        serializer.appendDateTime("t", timestamp);
+    }
+    if (!metadata.isEmpty()) {
+        serializer.appendDocument("m", metadata);
+    }
+    serializer.appendEndOfDocument();
+    sendRawDataOnEndpoint(serializer.document(), target, attributes);
+}
+
 bool ProducerAbstractInterface::payloadToValue(const QByteArray &payload, QByteArray *value)
 {
     Util::BSONDocument doc(payload);
