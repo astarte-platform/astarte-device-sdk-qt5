@@ -66,6 +66,9 @@ public:
 
     ConnectionStatus connectionStatus() const;
 
+    bool connectToAstarte();
+    bool disconnectFromAstarte();
+
 Q_SIGNALS:
     void unsetReceived(const QByteArray &interface, const QByteArray &path);
     void dataReceived(const QByteArray &interface, const QByteArray &path, const QVariant &value);

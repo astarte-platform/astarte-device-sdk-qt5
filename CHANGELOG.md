@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [1.0.1] - Unreleased
+### Added
+- Add public functions for connecting (connectToAstarte) and disconnecting (disconnectFromAstarte).
+
 ### Changed
 - Make the SDK build with Qt versions earlier than 5.6. http redirects will not be supported on
   those versions.
