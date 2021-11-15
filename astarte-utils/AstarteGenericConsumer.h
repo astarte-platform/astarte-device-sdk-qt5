@@ -38,6 +38,7 @@ public:
 
     void setMappingToTokens(const QHash<QByteArray, QByteArrayList> &mappingToTokens);
     void setMappingToType(const QHash<QByteArray, QVariant::Type> &mappingToType);
+    void setMappingToArrayType(const QHash<QByteArray, QVariant::Type> &mappingToType);
     void setMappingToAllowUnset(const QHash<QByteArray, bool> &mappingToAllowUnset);
 
 protected:
@@ -49,6 +50,7 @@ private:
 
     QHash<QByteArray, QByteArrayList> m_mappingToTokens;
     QHash<QByteArray, QVariant::Type> m_mappingToType;
+    QHash<QByteArray, QVariant::Type> m_mappingToArrayType;
     QHash<QByteArray, bool> m_mappingToAllowUnset;
 };
 
