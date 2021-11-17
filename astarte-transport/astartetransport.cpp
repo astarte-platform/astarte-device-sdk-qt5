@@ -142,7 +142,7 @@ void AstarteTransport::initImpl()
         } else {
           qCWarning(astarteTransportDC)
               << "endpoint is deprecated and will be removed in a future release."
-              << "Update your configuration using pairingJwt (which should point to the"
+              << "Update your configuration using pairingUrl (which should point to the"
               << "base Pairing URL, up to and excluding /v1) and realm (which should contain"
               << "the realm name)";
           endpointUrl = settings.value(QStringLiteral("endpoint")).toUrl();
