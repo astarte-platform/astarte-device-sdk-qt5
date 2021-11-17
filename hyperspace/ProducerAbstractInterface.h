@@ -91,6 +91,9 @@ class ProducerAbstractInterface : public AbstractWaveTarget
         void sendDataOnEndpoint(const QVariantHash &value, const QByteArray &target,
             const QHash<QByteArray, QByteArray> &attributes = QHash<QByteArray, QByteArray>(), const QDateTime &timestamp = QDateTime(), const QVariantHash &metadata = QVariantHash());
 
+        void sendDataOnEndpoint(QList<QVariant> value, const QByteArray &target,
+            const QHash<QByteArray, QByteArray> &attributes = QHash<QByteArray, QByteArray>(), const QDateTime &timestamp = QDateTime(), const QVariantHash &metadata = QVariantHash());
+
         bool payloadToValue(const QByteArray &payload, QByteArray *value);
         bool payloadToValue(const QByteArray &payload, int *value);
         bool payloadToValue(const QByteArray &payload, qint64 *value);

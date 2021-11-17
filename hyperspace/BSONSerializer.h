@@ -49,6 +49,7 @@ class BSONSerializer
         void appendDateTime(const char *name, const QDateTime &dateTime);
         void appendBooleanValue(const char *name, bool value);
 
+        void appendArray(const char *name, const QList<QVariant> &value);
         void appendValue(const char *name, const QVariant &value);
         void appendDocument(const char *name, const QVariantHash &document);
         void appendDocument(const char *name, const QVariantMap &document);

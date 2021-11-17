@@ -393,3 +393,29 @@ bool AstarteDeviceSDK::disconnectFromAstarte()
 
   return m_astarteTransport->disconnectFromBroker();
 }
+
+template <typename T> bool AstarteDeviceSDK::sendData(const QByteArray &interface, const QByteArray &path,
+                                                      const QList<T> &valueList, const QDateTime &timestamp, const QVariantHash &metadata)
+{
+    if (!m_producers.contains(interface)) {
+        qCWarning(astarteDeviceSDKDC) << "No producers for interface " << interface;
+        return false;
+    }
+
+    QList<QVariant> variantValue;
+    variantValue.reserve(valueList.length());
+
+    for (int i = 0; i < valueList.length(); i++){
+        variantValue.append(QVariant(valueList[i]));
+    }
+
+    return m_producers.value(interface)->sendData(variantValue, path, timestamp, metadata);
+}
+
+template bool AstarteDeviceSDK::sendData(const QByteArray &interface, const QByteArray &path, const QList<QByteArray> &value, const QDateTime &timestamp, const QVariantHash &metadata);
+template bool AstarteDeviceSDK::sendData(const QByteArray &interface, const QByteArray &path, const QList<int> &value, const QDateTime &timestamp, const QVariantHash &metadata);
+template bool AstarteDeviceSDK::sendData(const QByteArray &interface, const QByteArray &path, const QList<qlonglong> &value, const QDateTime &timestamp, const QVariantHash &metadata);
+template bool AstarteDeviceSDK::sendData(const QByteArray &interface, const QByteArray &path, const QList<double> &value, const QDateTime &timestamp, const QVariantHash &metadata);
+template bool AstarteDeviceSDK::sendData(const QByteArray &interface, const QByteArray &path, const QList<bool> &value, const QDateTime &timestamp, const QVariantHash &metadata);
+template bool AstarteDeviceSDK::sendData(const QByteArray &interface, const QByteArray &path, const QList<QDateTime> &value, const QDateTime &timestamp, const QVariantHash &metadata);
+template bool AstarteDeviceSDK::sendData(const QByteArray &interface, const QByteArray &path, const QList<QString> &value, const QDateTime &timestamp, const QVariantHash &metadata);
