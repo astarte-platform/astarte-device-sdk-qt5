@@ -16,6 +16,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Deprecate `endpoint` in the configuration, introduce `pairingUrl` and `realm` in the configuration
   to replace it.
 
+### Fixed
+- Fixed `sendUnset` bug that prevented it from working.
+
 ## [1.0.0] - 2021-06-28
 
 ## [1.0.0-rc.0] - 2021-05-10
