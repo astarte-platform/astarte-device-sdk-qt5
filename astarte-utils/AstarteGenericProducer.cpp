@@ -186,7 +186,10 @@ bool AstarteGenericProducer::unsetPath(const QByteArray &target)
         }
 
         if (mappingMatches) {
-            sendRawDataOnEndpoint(QByteArray(), target);
+            QHash<QByteArray, QByteArray> attributes;
+            attributes.insert("interfaceType", QByteArray::number(static_cast<int>(m_interfaceType)));
+
+            sendRawDataOnEndpoint(QByteArray(), target, attributes);
             return true;
         }
     }
