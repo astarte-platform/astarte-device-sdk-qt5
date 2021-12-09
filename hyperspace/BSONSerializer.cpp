@@ -213,6 +213,9 @@ void BSONSerializer::appendValue(const char *name, const QVariant &value)
         case QVariant::String:
             appendString(name, value.toString());
             break;
+        case QVariant::List:
+            appendArray(name, value.toList());
+            break;
         default:
             qWarning() << "Can't find valid type for " << value;
     }

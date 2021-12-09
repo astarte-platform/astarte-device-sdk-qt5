@@ -339,6 +339,19 @@ bool AstarteDeviceSDK::sendData(const QByteArray &interface, const QVariantHash 
         QString normalizedPath = i.key();
         normalizedPath.remove(0, trailingPath.size() + 1);
         normalizedValues.insert(normalizedPath, i.value());
+
+        QVariant value = i.value();
+
+        if (value.type() == QVariant::List){
+            QList<QVariant> valueList = value.toList();
+            for (int j = 0; j < valueList.length(); j++) {
+                if (valueList.at(j).type() != valueList.at(0).type()) {
+                    qCWarning(astarteDeviceSDKDC) << "Inconsistent types in QVariant array";
+                    return false;
+                }
+            }
+        }
+
     }
     // If we got here, verification was ok. Let's go.
 
