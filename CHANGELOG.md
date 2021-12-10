@@ -18,6 +18,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 - Fixed `sendUnset` bug that prevented it from working.
+- Emit `connectionStatusChanged` only after performing the internal connection status handling (e.g.
+  publishing the introspection).
 
 ## [1.0.0] - 2021-06-28
 
