@@ -182,14 +182,14 @@ void BSONSerializer::appendArray(const char *name, const QList<QVariant> &value)
 
     BSONSerializer subDocument;
     for (int i = 0; i < value.length(); i++) {
-        subDocument.appendValue(QString::number(i).toLatin1().constData(), value[i]);
+        subDocument.appendValue(QString::number(i).toLatin1().constData(), value[i], true);
     }
     subDocument.appendEndOfDocument();
     m_doc.append(name, strlen(name) + 1);
     m_doc.append(subDocument.document());
 }
 
-void BSONSerializer::appendValue(const char *name, const QVariant &value)
+void BSONSerializer::appendValue(const char *name, const QVariant &value, bool scalarOnly)
 {
     switch (value.type()) {
         case QVariant::Bool:
@@ -217,6 +217,11 @@ void BSONSerializer::appendValue(const char *name, const QVariant &value)
             appendArray(name, value.toList());
             break;
         default:
+            if (value.canConvert<QList<QVariant>>() && !scalarOnly) {
+                appendArray(name, value.value<QList<QVariant>>());
+                break;
+            }
+
             qWarning() << "Can't find valid type for " << value;
     }
 }

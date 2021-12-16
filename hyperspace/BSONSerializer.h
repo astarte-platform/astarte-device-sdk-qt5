@@ -50,7 +50,7 @@ class BSONSerializer
         void appendBooleanValue(const char *name, bool value);
 
         void appendArray(const char *name, const QList<QVariant> &value);
-        void appendValue(const char *name, const QVariant &value);
+        void appendValue(const char *name, const QVariant &value, bool scalarOnly=false);
         void appendDocument(const char *name, const QVariantHash &document);
         void appendDocument(const char *name, const QVariantMap &document);
 
