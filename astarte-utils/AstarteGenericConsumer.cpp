@@ -40,6 +40,11 @@ void AstarteGenericConsumer::setMappingToType(const QHash<QByteArray, QVariant::
     m_mappingToType = mappingToType;
 }
 
+void AstarteGenericConsumer::setMappingToArrayType(const QHash<QByteArray, QVariant::Type> &mappingToArrayType)
+{
+    m_mappingToArrayType = mappingToArrayType;
+}
+
 void AstarteGenericConsumer::setMappingToAllowUnset(const QHash<QByteArray, bool> &mappingToAllowUnset)
 {
     m_mappingToAllowUnset = mappingToAllowUnset;

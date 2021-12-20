@@ -39,14 +39,13 @@ public:
 
     bool sendData(const QVariant &value, const QByteArray &target,
             const QDateTime &timestamp = QDateTime(), const QVariantHash &metadata = QVariantHash());
-    bool sendData(const QList<QVariant> &value, const QByteArray &target,
-            const QDateTime &timestamp = QDateTime(), const QVariantHash &metadata = QVariantHash());
     bool sendData(const QVariantHash &value, const QByteArray &target,
             const QDateTime &timestamp = QDateTime(), const QVariantHash &metadata = QVariantHash());
     bool unsetPath(const QByteArray &target);
 
     void setMappingToTokens(const QHash<QByteArray, QByteArrayList> &mappingToTokens);
     void setMappingToType(const QHash<QByteArray, QVariant::Type> &mappingToType);
+    void setMappingToArrayType(const QHash<QByteArray, QVariant::Type> &mappingToType);
     void setMappingToRetention(const QHash<QByteArray, Hyperspace::Retention> &m_mappingToRetention);
     void setMappingToReliability(const QHash<QByteArray, Hyperspace::Reliability> &m_mappingToReliability);
     void setMappingToExpiry(const QHash<QByteArray, int> &m_mappingToExpiry);
@@ -54,6 +53,7 @@ public:
 
     QHash<QByteArray, QByteArrayList> mappingToTokens() const;
     QHash<QByteArray, QVariant::Type> mappingToType() const;
+    QHash<QByteArray, QVariant::Type> mappingToArrayType() const;
 
 protected:
     virtual void populateTokensAndStates() override final;
@@ -62,6 +62,7 @@ protected:
 private:
     QHash<QByteArray, QByteArrayList> m_mappingToTokens;
     QHash<QByteArray, QVariant::Type> m_mappingToType;
+    QHash<QByteArray, QVariant::Type> m_mappingToArrayType;
     QHash<QByteArray, Hyperspace::Retention> m_mappingToRetention;
     QHash<QByteArray, Hyperspace::Reliability> m_mappingToReliability;
     QHash<QByteArray, int> m_mappingToExpiry;
