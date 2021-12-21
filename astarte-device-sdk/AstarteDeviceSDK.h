@@ -48,7 +48,11 @@ public:
         DisconnectingStatus = Hyperdrive::AstarteTransport::DisconnectingStatus,
         ReconnectingStatus = Hyperdrive::AstarteTransport::ReconnectingStatus
     };
+    #if QT_VERSION < QT_VERSION_CHECK(5, 5, 0)
+    Q_ENUMS(AstarteDeviceSDK::ConnectionStatus)
+    #else
     Q_ENUM(AstarteDeviceSDK::ConnectionStatus)
+    #endif
 
     AstarteDeviceSDK(const QString &configurationPath, const QString &interfacesDir,
                      const QByteArray &hardwareId, QObject *parent = nullptr);

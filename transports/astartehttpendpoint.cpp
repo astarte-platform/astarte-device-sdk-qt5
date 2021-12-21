@@ -125,7 +125,7 @@ void HTTPEndpointPrivate::connectToEndpoint()
                 return;
             }
 
-            qCInfo(astarteHttpEndpointDC) << "Signature system initialized correctly!";
+            qCDebug(astarteHttpEndpointDC) << "Signature system initialized correctly!";
 
             if (!q->isReady()) {
                 q->setReady();

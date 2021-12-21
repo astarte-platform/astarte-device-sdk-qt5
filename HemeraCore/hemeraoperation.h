@@ -75,8 +75,12 @@ public:
     };
     Q_DECLARE_FLAGS(ExecutionOptions, ExecutionOption)
     Q_FLAGS(ExecutionOptions)
-    Q_ENUM(ExecutionOption)
 
+    #if QT_VERSION < QT_VERSION_CHECK(5, 5, 0)
+    Q_ENUMS(ExecutionOption)
+    #else
+    Q_ENUM(ExecutionOption)
+    #endif
     /**
      * Default destructor
      */

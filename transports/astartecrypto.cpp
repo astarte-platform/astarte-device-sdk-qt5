@@ -200,7 +200,7 @@ int CryptoPrivate::generateKeypair(const QString &privateKeyFile, const QString 
 
 bool CryptoPrivate::generateCSR(const QString &cn, const QString& privateKeyFile, const QString& csrOutputFile)
 {
-    qCInfo(astarteCryptoDC) << "Generating CSR" << csrOutputFile;
+    qCDebug(astarteCryptoDC) << "Generating CSR" << csrOutputFile;
     int             ret = 0;
 
     int             nVersion = 1;
@@ -260,7 +260,7 @@ bool CryptoPrivate::generateCSR(const QString &cn, const QString& privateKeyFile
 
     out = BIO_new_file(csrOutputFile.toLocal8Bit().constData(),"w");
     ret = PEM_write_bio_X509_REQ(out, x509_req);
-    qCInfo(astarteCryptoDC) << "Wrote CSR!" << csrOutputFile.toLocal8Bit().constData() << ret;
+    qCDebug(astarteCryptoDC) << "Wrote CSR!" << csrOutputFile.toLocal8Bit().constData() << ret;
 
     // 6. free
 free_all:

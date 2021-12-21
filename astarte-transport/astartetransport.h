@@ -56,7 +56,12 @@ public:
         DisconnectingStatus = MQTTClientWrapper::DisconnectingStatus,
         ReconnectingStatus = MQTTClientWrapper::ReconnectingStatus
     };
+
+    #if QT_VERSION < QT_VERSION_CHECK(5, 5, 0)
+    Q_ENUMS(Hyperdrive::AstarteTransport::ConnectionStatus)
+    #else
     Q_ENUM(Hyperdrive::AstarteTransport::ConnectionStatus)
+    #endif
 
     AstarteTransport(const QString &configurationPath, QObject *parent = Q_NULLPTR);
     virtual ~AstarteTransport();

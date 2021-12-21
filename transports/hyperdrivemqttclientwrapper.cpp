@@ -56,7 +56,7 @@ void MQTTClientWrapperPrivate::setStatus(MQTTClientWrapper::Status s)
 
 void MQTTClientWrapperPrivate::on_connect(int rc)
 {
-    qCInfo(mqttWrapperDC) << "Connected to broker returned!";
+    qCDebug(mqttWrapperDC) << "Connected to broker returned!";
 
     Q_Q(MQTTClientWrapper);
 
@@ -66,10 +66,10 @@ void MQTTClientWrapperPrivate::on_connect(int rc)
     if (rc == MOSQ_ERR_SUCCESS) {
         // TODO: check is session present with patched mosquitto
         sessionPresent = false;
-        qCInfo(mqttWrapperDC) << "Connected to broker, session present: " << sessionPresent;
+        qCDebug(mqttWrapperDC) << "Connected to broker, session present: " << sessionPresent;
         setStatus(MQTTClientWrapper::ConnectedStatus);
     } else {
-        qCInfo(mqttWrapperDC) << "Could not connected to broker!" << rc;
+        qCDebug(mqttWrapperDC) << "Could not connected to broker!" << rc;
     }
 }
 
@@ -82,7 +82,7 @@ void MQTTClientWrapperPrivate::on_disconnect(int rc)
         mosquitto->loop_stop();
     } else {
         // Unexpected disconnect, Mosquitto will reconnect
-        qCInfo(mqttWrapperDC) << "Unexpected disconnection from broker!" << rc;
+        qCDebug(mqttWrapperDC) << "Unexpected disconnection from broker!" << rc;
         setStatus(MQTTClientWrapper::ReconnectingStatus);
 
         Q_Q(MQTTClientWrapper);
@@ -329,7 +329,7 @@ bool MQTTClientWrapper::connectToBroker()
         case DisconnectingStatus: {
             int rc;
 
-            qCInfo(mqttWrapperDC) << "Starting mosquitto connection" << d->serverUrl.host() << d->serverUrl.port();
+            qCDebug(mqttWrapperDC) << "Starting mosquitto connection" << d->serverUrl.host() << d->serverUrl.port();
 
             if ((rc = d->mosquitto->connect_async(qstrdup(d->serverUrl.host().toLatin1().constData()), d->serverUrl.port(), d->keepAlive)) != MOSQ_ERR_SUCCESS) {
                 qCWarning(mqttWrapperDC) << "Could not initiate async mosquitto connection! Return code " << rc;
@@ -342,7 +342,7 @@ bool MQTTClientWrapper::connectToBroker()
             }
 
             d->setStatus(MQTTClientWrapper::ConnectingStatus);
-            qCInfo(mqttWrapperDC) << "Started mosquitto connection";
+            qCDebug(mqttWrapperDC) << "Started mosquitto connection";
 
             d->connackTimer->start();
 

@@ -293,7 +293,7 @@ void AstarteTransport::sendProperties()
             handleFailedPublish(c);
         } else {
             // Otherwise, it's the messageId
-            qCInfo(astarteTransportDC) << "Inserting in-flight message id " << rc;
+            qCDebug(astarteTransportDC) << "Inserting in-flight message id " << rc;
             AstarteTransportCache::instance()->addInFlightEntry(rc, c);
         }
     }
@@ -401,7 +401,7 @@ void AstarteTransport::cacheMessage(const CacheMessage &cacheMessage)
         handleFailedPublish(cacheMessage);
     } else {
         // Otherwise, it's the messageId
-        qCInfo(astarteTransportDC) << "Inserting in-flight message id " << rc;
+        qCDebug(astarteTransportDC) << "Inserting in-flight message id " << rc;
         AstarteTransportCache::instance()->addInFlightEntry(rc, cacheMessage);
     }
 }
@@ -461,7 +461,7 @@ AstarteTransport::ConnectionStatus AstarteTransport::connectionStatus() const
 void AstarteTransport::handleConnectionFailed()
 {
     int retryInterval = Hyperdrive::Utils::randomizedInterval(CONNECTION_RETRY_INTERVAL, 1.0);
-    qCInfo(astarteTransportDC) << "Connection failed, trying to reconnect to the broker in " << (retryInterval / 1000) << " seconds";
+    qCDebug(astarteTransportDC) << "Connection failed, trying to reconnect to the broker in " << (retryInterval / 1000) << " seconds";
     QTimer::singleShot(retryInterval, m_mqttBroker, &MQTTClientWrapper::connectToBroker);
 }
 
@@ -554,7 +554,7 @@ void AstarteTransport::bigBang()
 
 void AstarteTransport::onPublishConfirmed(int messageId)
 {
-    qCInfo(astarteTransportDC) << "Message with id" << messageId << ": publish confirmed";
+    qCDebug(astarteTransportDC) << "Message with id" << messageId << ": publish confirmed";
     CacheMessage cacheMessage = AstarteTransportCache::instance()->takeInFlightEntry(messageId);
 
     if (cacheMessage.interfaceType() == Hyperdrive::Interface::Type::Properties) {
@@ -604,7 +604,7 @@ void AstarteTransport::publishIntrospection()
         return;
     }
 
-    qCInfo(astarteTransportDC) << "Publishing introspection!";
+    qCDebug(astarteTransportDC) << "Publishing introspection!";
 
     QByteArray introspectionPayload = introspectionString();
     qCDebug(astarteTransportDC) << "Introspection is " << introspectionPayload;
@@ -613,7 +613,7 @@ void AstarteTransport::publishIntrospection()
     if (rc < 0) {
         qCWarning(astarteTransportDC) << "Can't send introspection, error " << rc;
     } else {
-        qCInfo(astarteTransportDC) << "Published introspection with message id " << rc;
+        qCDebug(astarteTransportDC) << "Published introspection with message id " << rc;
         m_inFlightIntrospectionMessageId = rc;
         m_inFlightIntrospection = introspectionPayload;
     }

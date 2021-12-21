@@ -48,14 +48,22 @@ public:
         DisconnectingStatus = 4,
         ReconnectingStatus = 5
     };
-    Q_ENUM(Status);
+    #if QT_VERSION < QT_VERSION_CHECK(5, 5, 0)
+    Q_ENUMS(Status)
+    #else
+    Q_ENUM(Status)
+    #endif
     enum MQTTQoS {
         AtMostOnceQoS = 0,
         AtLeastOnceQoS = 1,
         ExactlyOnceQoS = 2,
         DefaultQoS = 99
     };
-    Q_ENUM(MQTTQoS);
+    #if QT_VERSION < QT_VERSION_CHECK(5, 5, 0)
+    Q_ENUMS(MQTTQoS)
+    #else
+    Q_ENUM(MQTTQoS)
+    #endif
 
     explicit MQTTClientWrapper(const QUrl &host, QObject *parent);
     explicit MQTTClientWrapper(const QUrl &host, const QByteArray &clientId, QObject *parent = nullptr);
@@ -98,5 +106,9 @@ Q_SIGNALS:
 
 };
 }
+
+#if QT_VERSION < QT_VERSION_CHECK(5, 5, 0)
+Q_DECLARE_METATYPE(Hyperdrive::MQTTClientWrapper::Status)
+#endif
 
 #endif // HYPERDRIVE_MQTTCLIENTWRAPPER_H

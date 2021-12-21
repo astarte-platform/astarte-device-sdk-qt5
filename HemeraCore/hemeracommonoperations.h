@@ -41,7 +41,11 @@ public:
     };
     Q_DECLARE_FLAGS(SequenceOptions, SequenceOption)
     Q_FLAGS(SequenceOptions)
+    #if QT_VERSION < QT_VERSION_CHECK(5, 5, 0)
+    Q_ENUMS(SequenceOption)
+    #else
     Q_ENUM(SequenceOption)
+    #endif
 
     explicit SequentialOperation(const QList<Hemera::Operation*> &sequence, QObject *parent = nullptr);
     explicit SequentialOperation(const QList<Hemera::Operation*> &sequence, const QList<Hemera::Operation*> &revertSequence, QObject *parent = nullptr);
@@ -78,7 +82,11 @@ public:
     };
     Q_DECLARE_FLAGS(CompositeOptions, CompositeOption)
     Q_FLAGS(CompositeOptions)
+    #if QT_VERSION < QT_VERSION_CHECK(5, 5, 0)
+    Q_ENUMS(CompositeOption)
+    #else
     Q_ENUM(CompositeOption)
+    #endif
 
     explicit CompositeOperation(const QList<Hemera::Operation*> &operations, QObject *parent = nullptr);
     explicit CompositeOperation(const QList<Hemera::Operation*> &operations, CompositeOptions options,
