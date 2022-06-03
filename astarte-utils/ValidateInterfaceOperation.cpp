@@ -33,6 +33,7 @@ ValidateInterfaceOperation::ValidateInterfaceOperation(const QString &path, QObj
     : m_checker(new QJsonSchemaChecker())
     , m_path(path)
 {
+    Q_UNUSED(parent);
 }
 
 ValidateInterfaceOperation::~ValidateInterfaceOperation()

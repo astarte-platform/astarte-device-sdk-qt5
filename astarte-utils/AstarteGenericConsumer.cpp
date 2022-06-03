@@ -57,6 +57,7 @@ void AstarteGenericConsumer::populateTokensAndStates()
 Hyperspace::ProducerConsumer::ConsumerAbstractAdaptor::DispatchResult AstarteGenericConsumer::dispatch(int i, const QByteArray &payload,
                                                                                                        const QList<QByteArray> &inputTokens)
 {
+    Q_UNUSED(i);
     QHash<QByteArray, QByteArrayList>::const_iterator it;
 
     for (it = m_mappingToTokens.constBegin(); it != m_mappingToTokens.constEnd(); it++) {

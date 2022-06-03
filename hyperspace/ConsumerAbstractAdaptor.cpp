@@ -98,7 +98,7 @@ int ConsumerAbstractAdaptor::dispatchIndex(const QList<QByteArray> &inputTokens)
 
     QList<int> nextStates;
 
-    for (const QByteArray token : inputTokens) {
+    for (const QByteArray &token : inputTokens) {
         nextStates = QList<int>();
 
         for (int i = 0; i < currentStates.count(); i++) {

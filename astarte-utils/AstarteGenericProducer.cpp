@@ -258,5 +258,8 @@ void AstarteGenericProducer::populateTokensAndStates()
 Hyperspace::ProducerConsumer::ProducerAbstractInterface::DispatchResult AstarteGenericProducer::dispatch(int i, const QByteArray &payload,
                                                                                                          const QList<QByteArray> &inputTokens)
 {
+    Q_UNUSED(i);
+    Q_UNUSED(payload);
+    Q_UNUSED(inputTokens);
     return IndexNotFound;
 }
