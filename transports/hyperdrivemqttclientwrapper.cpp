@@ -118,7 +118,15 @@ void MQTTClientWrapperPrivate::on_unsubscribe(int mid)
 
 void MQTTClientWrapperPrivate::on_log(int level, const char *str)
 {
-    qWarning() << "MOSQUITTO LOG!" << level << str;
+    switch (level) {
+    case MOSQ_LOG_WARNING:
+    case MOSQ_LOG_ERR:
+        qWarning() << "MOSQUITTO LOG!" << str;
+        break;
+    default:
+        qDebug() << "MOSQUITTO: " << str;
+        break;
+    }
 }
 
 void MQTTClientWrapperPrivate::on_error()
