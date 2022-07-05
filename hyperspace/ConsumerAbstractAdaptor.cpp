@@ -214,6 +214,18 @@ bool ConsumerAbstractAdaptor::payloadToValue(const QByteArray &payload, QDateTim
     return true;
 }
 
+bool ConsumerAbstractAdaptor::payloadToValue(const QByteArray &payload, QList<QVariant> *value)
+{
+  Util::BSONDocument doc(payload);
+  if (Q_UNLIKELY(!doc.isValid() || !doc.contains("v"))) {
+      *value = QList<QVariant>();
+      return false;
+  }
+
+  *value = doc.listVariantValue("v");
+  return true;
+}
+
 }
 
 }

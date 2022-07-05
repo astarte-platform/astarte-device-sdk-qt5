@@ -47,6 +47,7 @@ class BSONDocument
         int32_t int32Value(const char *name, int32_t defaultValue = 0) const;
         int64_t int64Value(const char *name, int64_t defaultValue = 0) const;
         bool booleanValue(const char *name, bool defaultValue = false) const;
+        QList<QVariant> listVariantValue(const char *name, const QList<QVariant> &defaultValue = QList<QVariant>()) const;
 
         BSONDocument subdocument(const char *name) const;
         QHash<QByteArray, QByteArray> byteArrayValuesHash() const;

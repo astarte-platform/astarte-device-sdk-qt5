@@ -93,6 +93,13 @@ Hyperspace::ProducerConsumer::ConsumerAbstractAdaptor::DispatchResult AstarteGen
             }
         }
 
+        if (m_mappingToArrayType.contains(matchedMapping)){
+            QList<QVariant> value;
+            if (!payloadToValue(payload, &value)) return CouldNotConvertPayload;
+            parent()->receiveValue(interface(), path, value);
+            return Success;
+        }
+
         switch (m_mappingToType.value(matchedMapping)) {
             case QMetaType::Bool: {
                 bool value;
