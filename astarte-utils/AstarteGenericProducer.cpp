@@ -18,7 +18,9 @@
 
 #include "AstarteGenericProducer.h"
 
-#include <QtCore/QDebug>
+#include <QtCore/QLoggingCategory>
+
+Q_LOGGING_CATEGORY(astartGenericProducerDC, "astarte-generic-producer", DEBUG_MESSAGES_DEFAULT_LEVEL)
 
 AstarteGenericProducer::AstarteGenericProducer(const QByteArray &interface, Hyperdrive::Interface::Type interfaceType,
                                                Hyperdrive::AstarteTransport *astarteTransport, QObject *parent)
@@ -58,7 +60,7 @@ bool AstarteGenericProducer::sendData(const QVariant &value, const QByteArray &t
         const QDateTime &timestamp, const QVariantHash &metadata)
 {
     if (!isValidTarget(target)) {
-        qWarning() << "Invalid target: " << target << ". Discarding value: " << value;
+        qCWarning(astartGenericProducerDC) << "Invalid target: " << target << ". Discarding value: " << value;
         return false;
     }
 
@@ -119,7 +121,7 @@ bool AstarteGenericProducer::sendData(const QVariant &value, const QByteArray &t
         } else {
 
             if (!value.canConvert(m_mappingToType.value(matchedMapping))) {
-                qWarning() << "Invalid type for scalar value in sendDataOnEndpoint, expected " << m_mappingToType.value(matchedMapping) << "got" << value.type() << "for " << matchedMapping;
+                qCWarning(astartGenericProducerDC) << "Invalid type for scalar value in sendDataOnEndpoint, expected " << m_mappingToType.value(matchedMapping) << "got" << value.type() << "for " << matchedMapping;
                 return false;
             }
 
@@ -149,13 +151,13 @@ bool AstarteGenericProducer::sendData(const QVariant &value, const QByteArray &t
                     sendDataOnEndpoint(value.toString(), target, attributes, timestamp, metadata);
                     return true;
                 default:
-                    qWarning() << "Can't find valid scalar type for " << target;
+                    qCWarning(astartGenericProducerDC) << "Can't find valid scalar type for " << target;
             }
 
         }
     }
 
-    qWarning() << "Can't find valid mapping for " << target;
+    qCWarning(astartGenericProducerDC) << "Can't find valid mapping for " << target;
     return false;
 }
 
@@ -174,7 +176,7 @@ bool AstarteGenericProducer::sendData(const QVariantHash &value, const QByteArra
 bool AstarteGenericProducer::unsetPath(const QByteArray &target)
 {
     if (!isValidTarget(target)) {
-        qWarning() << "Invalid target: " << target << ". Discarding unset";
+        qCWarning(astartGenericProducerDC) << "Invalid target: " << target << ". Discarding unset";
         return false;
     }
 
@@ -212,7 +214,7 @@ bool AstarteGenericProducer::unsetPath(const QByteArray &target)
         }
     }
 
-    qWarning() << "Trying to unset " << target << "without allow_unset";
+    qCWarning(astartGenericProducerDC) << "Trying to unset " << target << "without allow_unset";
     return false;
 }
 

@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - Handle session present from CONNACK flag since Mosquitto 1.5.
 
+### Changed
+- Improve categorized logging.
+
 ## [1.0.4] - 2022-10-25
 
 ## [1.0.3] - 2022-07-08

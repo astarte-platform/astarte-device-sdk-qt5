@@ -99,7 +99,7 @@ void DefaultCredentialsSecretProvider::sendRegistrationRequest()
         return;
     }
 
-    qWarning() << "Registering the device";
+    qCWarning(defaultCredSecretProviderDC) << "Registering the device";
     QJsonObject data;
     data.insert(QStringLiteral("hw_id"), QLatin1String(m_hardwareId));
 

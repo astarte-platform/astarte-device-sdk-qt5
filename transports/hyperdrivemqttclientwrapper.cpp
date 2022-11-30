@@ -21,7 +21,6 @@
 
 #include <hyperdriveutils.h>
 
-#include <QtCore/QDebug>
 #include <QtCore/QDir>
 #include <QtCore/QLoggingCategory>
 #include <QtCore/QTimer>
@@ -135,17 +134,17 @@ void MQTTClientWrapperPrivate::on_log(int level, const char *str)
     switch (level) {
     case MOSQ_LOG_WARNING:
     case MOSQ_LOG_ERR:
-        qWarning() << "MOSQUITTO LOG!" << str;
+        qCWarning(mqttWrapperDC) << "MOSQUITTO LOG!" << str;
         break;
     default:
-        qDebug() << "MOSQUITTO: " << str;
+        qCDebug(mqttWrapperDC) << "MOSQUITTO: " << str;
         break;
     }
 }
 
 void MQTTClientWrapperPrivate::on_error()
 {
-    qWarning() << "MOSQUITTO ERROR!";
+    qCWarning(mqttWrapperDC) << "MOSQUITTO ERROR!";
 }
 
 void MQTTClientWrapperPrivate::on_publish(int mid)
@@ -181,7 +180,7 @@ MQTTClientWrapper::~MQTTClientWrapper()
     Q_D(MQTTClientWrapper);
 
     if (Q_LIKELY(d->mosquitto)) {
-        qWarning() << "Stopping mosquitto!";
+        qCWarning(mqttWrapperDC) << "Stopping mosquitto!";
         d->mosquitto->disconnect();
         d->mosquitto->loop_stop();
 
@@ -298,7 +297,7 @@ void MQTTClientWrapper::initImpl()
             QByteArray trustStore = d->pathToCA.toLatin1();
             QByteArray keyStore = d->pathToCertificate.toLatin1();
             // Configure mutual SSL authentication.
-            qDebug() << "Setting TLS!" << trustStore << keyStore << privateKey;
+            qCDebug(mqttWrapperDC) << "Setting TLS!" << trustStore << keyStore << privateKey;
             d->mosquitto->tls_set(trustStore.constData(), NULL, keyStore.constData(), privateKey.constData());
             if (d->ignoreSslErrors) {
                 d->mosquitto->tls_opts_set(0);

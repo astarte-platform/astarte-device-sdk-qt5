@@ -18,7 +18,7 @@
 
 #include "BSONDocument.h"
 
-#include <QtCore/QDebug>
+#include <QtCore/QLoggingCategory>
 #include <QtCore/QHash>
 
 #include <endian.h>
@@ -35,6 +35,8 @@
 #define TYPE_DATETIME 0x09
 #define TYPE_INT32 0x10
 #define TYPE_INT64 0x12
+
+Q_LOGGING_CATEGORY(bsonDocumentDC, "hyperspace.util.bsondocument", DEBUG_MESSAGES_DEFAULT_LEVEL)
 
 namespace Hyperspace
 {
@@ -99,7 +101,7 @@ static unsigned int bson_next_item_offset(unsigned int offset, unsigned int keyL
         break;
 
         default: {
-            qWarning() << "BSON parser: unrecognized BSON type: " << elementType;
+            qCWarning(bsonDocumentDC) << "BSON parser: unrecognized BSON type: " << elementType;
             return 0;
         }
     }
@@ -239,7 +241,7 @@ static int bson_check_validity(const void *document, unsigned int fileSize)
     int offset;
 
     if (!fileSize) {
-        qWarning() << "Empty buffer: no BSON document found";
+        qCWarning(bsonDocumentDC) << "Empty buffer: no BSON document found";
         return 0;
     }
 
@@ -249,17 +251,17 @@ static int bson_check_validity(const void *document, unsigned int fileSize)
     }
 
     if (fileSize < 4 + 1 + 2 + 1) {
-        qWarning() << "BSON data too small";
+        qCWarning(bsonDocumentDC) << "BSON data too small";
         return 0;
     }
 
     if (docLen > fileSize) {
-        qWarning() << "BSON document is bigger than data: data: " << fileSize << " document: " << docLen;
+        qCWarning(bsonDocumentDC) << "BSON document is bigger than data: data: " << fileSize << " document: " << docLen;
         return 0;
     }
 
     if (docBytes[docLen - 1] != 0) {
-        qWarning() << "BSON document is not terminated by null byte.";
+        qCWarning(bsonDocumentDC) << "BSON document is not terminated by null byte.";
         return 0;
     }
 
@@ -277,7 +279,7 @@ static int bson_check_validity(const void *document, unsigned int fileSize)
        break;
 
        default:
-           qWarning() << "Unrecognized BSON document first type\n";
+           qCWarning(bsonDocumentDC) << "Unrecognized BSON document first type\n";
            return 0;
     }
 

@@ -182,7 +182,7 @@ CacheMessage CacheMessage::fromBinary(const QByteArray &data)
     if (doc.contains("a")) {
         Hyperspace::Util::BSONDocument attributesDoc = doc.subdocument("a");
         if (!attributesDoc.isValid()) {
-            qDebug() << "CacheMessage attributes are not valid\n";
+            qCDebug(hyperdriveCacheMessageDC) << "CacheMessage attributes are not valid\n";
             return CacheMessage();
         }
         c.setAttributes(attributesDoc.byteArrayValuesHash());

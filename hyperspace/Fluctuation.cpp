@@ -21,8 +21,10 @@
 #include "BSONDocument.h"
 #include "BSONSerializer.h"
 
-#include <QtCore/QDebug>
+#include <QtCore/QLoggingCategory>
 #include <QSharedData>
+
+Q_LOGGING_CATEGORY(fluctuationDC, "hyperspace.fluctuation", DEBUG_MESSAGES_DEFAULT_LEVEL)
 
 namespace Hyperspace {
 
@@ -152,11 +154,11 @@ Fluctuation Fluctuation::fromBinary(const QByteArray &data)
 {
     Util::BSONDocument doc(data);
     if (Q_UNLIKELY(!doc.isValid())) {
-        qWarning() << "Fluctuation BSON document is not valid!";
+        qCWarning(fluctuationDC) << "Fluctuation BSON document is not valid!";
         return Fluctuation();
     }
     if (Q_UNLIKELY(doc.int32Value("y") != (int32_t) Protocol::MessageType::Fluctuation)) {
-        qWarning() << "Received message is not a Fluctuation";
+        qCWarning(fluctuationDC) << "Received message is not a Fluctuation";
         return Fluctuation();
     }
 
@@ -168,7 +170,7 @@ Fluctuation Fluctuation::fromBinary(const QByteArray &data)
     if (doc.contains("a")) {
         Util::BSONDocument attributesDoc = doc.subdocument("a");
         if (!attributesDoc.isValid()) {
-            qDebug() << "Fluctuation attributes are not valid\n";
+            qCDebug(fluctuationDC) << "Fluctuation attributes are not valid\n";
             return Fluctuation();
         }
         f.setAttributes(attributesDoc.byteArrayValuesHash());

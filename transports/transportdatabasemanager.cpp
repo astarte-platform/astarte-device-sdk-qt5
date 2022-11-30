@@ -59,7 +59,7 @@ bool ensureDatabase(const QString &dbPath, const QString &migrationsDirPath)
     // Does the directory exist? We have to create, or SQLITE will complain.
     QDir dbDir(QFileInfo(dbPath).dir());
     if (!dbDir.exists()) {
-        qDebug() << "Creating path... " << dbDir.mkpath(dbDir.absolutePath());
+        qCDebug(transportDatabaseManagerDC) << "Creating path... " << dbDir.mkpath(dbDir.absolutePath());
     }
 
     db.setDatabaseName(dbPath);

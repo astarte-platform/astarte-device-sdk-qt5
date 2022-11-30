@@ -21,7 +21,7 @@
 #include "BSONDocument.h"
 #include "BSONSerializer.h"
 
-#include <QtCore/QDebug>
+#include <QtCore/QLoggingCategory>
 #include <QtCore/QSharedData>
 
 #include <time.h>
@@ -29,6 +29,8 @@
 static bool random_initialized = false;
 static quint64 internal_qualifier;
 static quint32 internal_id_sequential = 0;
+
+Q_LOGGING_CATEGORY(waveDataDC, "hyperspace.wavedata", DEBUG_MESSAGES_DEFAULT_LEVEL)
 
 namespace Hyperspace {
 
@@ -194,11 +196,11 @@ Wave Wave::fromBinary(const QByteArray &data)
 {
     Util::BSONDocument doc(data);
     if (Q_UNLIKELY(!doc.isValid())) {
-        qWarning() << "Wave BSON document is not valid!";
+        qCWarning(waveDataDC) << "Wave BSON document is not valid!";
         return Wave();
     }
     if (Q_UNLIKELY(doc.int32Value("y") != (int32_t) Protocol::MessageType::Wave)) {
-        qWarning() << "Received message is not a Wave";
+        qCWarning(waveDataDC) << "Received message is not a Wave";
         return Wave();
    }
 
@@ -212,7 +214,7 @@ Wave Wave::fromBinary(const QByteArray &data)
     if (doc.contains("a")) {
         Util::BSONDocument attributesDoc = doc.subdocument("a");
         if (!attributesDoc.isValid()) {
-            qDebug() << "Wave attributes are not valid\n";
+            qCDebug(waveDataDC) << "Wave attributes are not valid\n";
             return Wave();
         }
         w.setAttributes(attributesDoc.byteArrayValuesHash());
