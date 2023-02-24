@@ -164,8 +164,7 @@ void HTTPEndpointPrivate::ensureCredentialsSecret()
     provider->setSslConfiguration(sslConfiguration);
     credentialsSecretProvider = provider;
 
-    QObject::connect(credentialsSecretProvider, &CredentialsSecretProvider::credentialsSecretReady, q, [this, q] (const QByteArray &credentialsSecret) {
-        qCDebug(astarteHttpEndpointDC) << "Credentials secret is: " << credentialsSecret;
+    QObject::connect(credentialsSecretProvider, &CredentialsSecretProvider::credentialsSecretReady, q, [this, q] () {
         connectToEndpoint();
     });
 
@@ -201,7 +200,9 @@ void HTTPEndpoint::initImpl()
 
     QSettings settings(d->configurationFile, QSettings::IniFormat);
     settings.beginGroup(QStringLiteral("AstarteTransport")); {
-        if (settings.contains(QStringLiteral("pairingJwt"))) {
+        if (settings.contains(QStringLiteral("credentialsSecret"))) {
+            d->credentialsSecret = settings.value(QStringLiteral("credentialsSecret")).toString().toLatin1();
+        } else if (settings.contains(QStringLiteral("pairingJwt"))) {
           d->pairingJwt = settings.value(QStringLiteral("pairingJwt")).toString().toLatin1();
         } else {
           qCWarning(astarteHttpEndpointDC)
@@ -209,6 +210,13 @@ void HTTPEndpoint::initImpl()
               << "Update your configuration using pairingJwt instead of agentKey";
           d->pairingJwt = settings.value(QStringLiteral("agentKey")).toString().toLatin1();
         }
+
+        if (settings.contains(QStringLiteral("credentialsSecret"))
+            && settings.contains(QStringLiteral("pairingJwt"))) {
+          qCWarning(astarteHttpEndpointDC)
+              << "CredentialsSecret and pairingJwt both set, credentialsSecret will be preferred";
+        }
+
         d->brokerCa = settings.value(QStringLiteral("brokerCa"), QStringLiteral("/etc/ssl/certs/ca-certificates.crt")).toString();
         d->ignoreSslErrors = settings.value(QStringLiteral("ignoreSslErrors"), false).toBool();
         if (settings.contains(QStringLiteral("pairingCa"))) {

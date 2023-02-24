@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+### Added
+-  Introduce `credentialsSecret` in the configuration.
+
 ## [1.0.5] - Unreleased
 ### Added
 - Handle session present from CONNACK flag since Mosquitto 1.5.

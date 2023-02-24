@@ -38,7 +38,7 @@ public:
     virtual void ensureCredentialsSecret() = 0;
 
 Q_SIGNALS:
-    void credentialsSecretReady(const QByteArray &credentialsSecret);
+    void credentialsSecretReady();
 
 protected:
     HTTPEndpoint *m_endpoint;

@@ -50,7 +50,7 @@ void DefaultCredentialsSecretProvider::ensureCredentialsSecret()
     QSettings settings(QStringLiteral("%1/endpoint_crypto.conf").arg(m_endpointConfigurationPath), QSettings::IniFormat);
     if (settings.contains(QStringLiteral("credentialsSecret"))) {
         m_credentialsSecret = settings.value(QStringLiteral("credentialsSecret")).toString().toLatin1();
-        emit credentialsSecretReady(m_credentialsSecret);
+        emit credentialsSecretReady();
     } else {
         sendRegistrationRequest();
     }
@@ -154,13 +154,9 @@ void DefaultCredentialsSecretProvider::sendRegistrationRequest()
         m_credentialsSecret = credentialsSecretString.toLatin1();
 
         // Ok, we need to write the files now.
-        {
-            QSettings settings(QStringLiteral("%1/endpoint_crypto.conf").arg(m_endpointConfigurationPath),
-                               QSettings::IniFormat);
-            settings.setValue(QStringLiteral("credentialsSecret"), credentialsSecretString);
-        }
+        this->saveCredentialsSecret(m_credentialsSecret);
 
-        emit credentialsSecretReady(m_credentialsSecret);
+        emit credentialsSecretReady();
     });
 }
 
@@ -169,6 +165,13 @@ void DefaultCredentialsSecretProvider::retryRegistrationLater()
     int retryInterval = Hyperdrive::Utils::randomizedInterval(RETRY_INTERVAL, 1.0);
     qCWarning(defaultCredSecretProviderDC) << "Retrying in" << (retryInterval / 1000) << "seconds";
     QTimer::singleShot(retryInterval, this, &DefaultCredentialsSecretProvider::sendRegistrationRequest);
+}
+
+void DefaultCredentialsSecretProvider::saveCredentialsSecret(const QByteArray &credentialsSecret)
+{
+    QSettings settings(QStringLiteral("%1/endpoint_crypto.conf").arg(m_endpointConfigurationPath),
+        QSettings::IniFormat);
+    settings.setValue(QStringLiteral("credentialsSecret"), credentialsSecret);
 }
 
 }
