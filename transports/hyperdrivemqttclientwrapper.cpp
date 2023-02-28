@@ -54,7 +54,7 @@ void MQTTClientWrapperPrivate::setStatus(MQTTClientWrapper::Status s)
     }
 }
 
-void MQTTClientWrapperPrivate::on_connect(int rc)
+void MQTTClientWrapperPrivate::handleConnack(int rc)
 {
     qCInfo(mqttWrapperDC) << "Connected to broker returned!";
 
@@ -64,13 +64,27 @@ void MQTTClientWrapperPrivate::on_connect(int rc)
     Q_EMIT q->connackReceived();
 
     if (rc == MOSQ_ERR_SUCCESS) {
-        // TODO: check is session present with patched mosquitto
-        sessionPresent = false;
         qCInfo(mqttWrapperDC) << "Connected to broker, session present: " << sessionPresent;
         setStatus(MQTTClientWrapper::ConnectedStatus);
     } else {
         qCInfo(mqttWrapperDC) << "Could not connected to broker!" << rc;
     }
+}
+
+void MQTTClientWrapperPrivate::on_connect(int rc)
+{
+    if (rc == MOSQ_ERR_SUCCESS) {
+        sessionPresent = false;
+    }
+    this->handleConnack(rc);
+}
+
+void MQTTClientWrapperPrivate::on_connect_with_flags(int rc, int flags)
+{
+    if (rc == MOSQ_ERR_SUCCESS) {
+        sessionPresent = isSessionPresent(flags);
+    }
+    this->handleConnack(rc);
 }
 
 void MQTTClientWrapperPrivate::on_disconnect(int rc)
@@ -118,7 +132,15 @@ void MQTTClientWrapperPrivate::on_unsubscribe(int mid)
 
 void MQTTClientWrapperPrivate::on_log(int level, const char *str)
 {
-    qWarning() << "MOSQUITTO LOG!" << level << str;
+    switch (level) {
+    case MOSQ_LOG_WARNING:
+    case MOSQ_LOG_ERR:
+        qWarning() << "MOSQUITTO LOG!" << str;
+        break;
+    default:
+        qDebug() << "MOSQUITTO: " << str;
+        break;
+    }
 }
 
 void MQTTClientWrapperPrivate::on_error()
@@ -133,6 +155,10 @@ void MQTTClientWrapperPrivate::on_publish(int mid)
     Q_EMIT q->publishConfirmed(mid);
 }
 
+bool MQTTClientWrapperPrivate::isSessionPresent(int flags)
+{
+    return (flags & 0x1) != 0;
+}
 
 MQTTClientWrapper::MQTTClientWrapper(const QUrl &host, QObject *parent)
     : MQTTClientWrapper(host, QByteArray(), parent)

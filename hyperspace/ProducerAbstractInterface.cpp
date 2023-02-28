@@ -103,7 +103,7 @@ int ProducerAbstractInterface::dispatchIndex(const QList<QByteArray> &inputToken
 
     QList<int> nextStates;
 
-    for (const QByteArray token : inputTokens) {
+    for (const QByteArray &token : inputTokens) {
         nextStates = QList<int>();
 
         for (int i = 0; i < currentStates.count(); i++) {
@@ -262,6 +262,21 @@ void ProducerAbstractInterface::sendDataOnEndpoint(const QVariantHash &value, co
 {
     Util::BSONSerializer serializer;
     serializer.appendDocument("v", value);
+    if (!timestamp.isNull() && timestamp.isValid()) {
+        serializer.appendDateTime("t", timestamp);
+    }
+    if (!metadata.isEmpty()) {
+        serializer.appendDocument("m", metadata);
+    }
+    serializer.appendEndOfDocument();
+    sendRawDataOnEndpoint(serializer.document(), target, attributes);
+}
+
+void ProducerAbstractInterface::sendDataOnEndpoint(QList<QVariant> value, const QByteArray &target,
+        const QHash<QByteArray, QByteArray> &attributes, const QDateTime &timestamp, const QVariantHash &metadata)
+{
+    Util::BSONSerializer serializer;
+    serializer.appendArray("v", value);
     if (!timestamp.isNull() && timestamp.isValid()) {
         serializer.appendDateTime("t", timestamp);
     }

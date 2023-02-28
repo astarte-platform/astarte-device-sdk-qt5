@@ -1,7 +1,7 @@
 /*
  * This file is part of Astarte.
  *
- * Copyright 2017 Ispirata Srl
+ * Copyright 2017-2021 Ispirata Srl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@
 
 #include <HyperspaceProducerConsumer/ProducerAbstractInterface>
 #include <astartetransport.h>
+#include <QtCore/QPair>
 
 namespace Hyperdrive {
 class Interface;
@@ -31,6 +32,8 @@ class Interface;
 class AstarteGenericConsumer;
 class AstarteGenericProducer;
 class QJsonSchemaChecker;
+
+enum EndpointType { AstarteScalarType, AstarteArrayType };
 
 class AstarteDeviceSDK : public Hemera::AsyncInitObject
 {
@@ -62,9 +65,15 @@ public:
 
     bool sendData(const QByteArray &interface, const QVariantHash &value, const QVariantHash &metadata);
 
+    template <typename T> bool sendData(const QByteArray &interface, const QByteArray &path, const QList<T> &value,
+            const QDateTime &timestamp = QDateTime(), const QVariantHash &metadata = QVariantHash());
+
     bool sendUnset(const QByteArray &interface, const QByteArray &path);
 
     ConnectionStatus connectionStatus() const;
+
+    bool connectToAstarte();
+    bool disconnectFromAstarte();
 
 Q_SIGNALS:
     void unsetReceived(const QByteArray &interface, const QByteArray &path);
@@ -91,7 +100,7 @@ private:
     void createProducer(const Hyperdrive::Interface &interface, const QJsonObject &producerObject);
     void createConsumer(const Hyperdrive::Interface &interface, const QJsonObject &consumerObject);
 
-    QVariant::Type typeStringToVariantType(const QString &typeString) const;
+    QPair<EndpointType, QVariant::Type> typeStringToVariantType(const QString &typeString) const;
     Hyperspace::Retention retentionStringToRetention(const QString &retentionString) const;
     Hyperspace::Reliability reliabilityStringToReliability(const QString &reliabilityString) const;
 
