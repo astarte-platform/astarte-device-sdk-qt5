@@ -29,6 +29,7 @@
 #define TYPE_DOUBLE 0x01
 #define TYPE_STRING 0x02
 #define TYPE_DOCUMENT 0x03
+#define TYPE_ARRAY 0x04
 #define TYPE_BINARY 0x05
 #define TYPE_BOOLEAN 0x08
 #define TYPE_DATETIME 0x09
@@ -267,6 +268,7 @@ static int bson_check_validity(const void *document, unsigned int fileSize)
        case TYPE_DOUBLE:
        case TYPE_STRING:
        case TYPE_DOCUMENT:
+       case TYPE_ARRAY:
        case TYPE_BINARY:
        case TYPE_BOOLEAN:
        case TYPE_DATETIME:
@@ -327,16 +329,21 @@ QVariant BSONDocument::value(const char *name, QVariant defaultValue) const
         case TYPE_STRING:
             return QVariant(QString::fromUtf8(bson_value_to_string(value, nullptr)));
 
+        case TYPE_ARRAY:
+            return listVariantValue(name);
+
         case TYPE_DOCUMENT: {
             uint32_t len = 0;
             const char *subdocumentData = (const char *) bson_value_to_document(value, &len);
             return QVariant(QByteArray(subdocumentData, len));
         }
+
         case TYPE_BINARY: {
             uint32_t len = 0;
             const char *data = bson_value_to_binary(value, &len);
             return QVariant(QByteArray(data, len));
         }
+
         case TYPE_BOOLEAN:
             return QVariant((bool) (bson_value_to_int8(value) == '\1'));
 
@@ -485,6 +492,29 @@ QHash<QByteArray, QByteArray> BSONDocument::byteArrayValuesHash() const
 QByteArray BSONDocument::toByteArray() const
 {
     return m_doc;
+}
+
+QList<QVariant>
+BSONDocument::listVariantValue(const char *name,
+                               const QList<QVariant> &defaultValue) const
+{
+    QList<QVariant> tmp;
+    uint8_t type;
+    const void *value = bson_key_lookup(name, m_doc.constData(), &type);
+
+    uint32_t len = 0;
+    const void *documentData = (const char *)bson_value_to_document(value, &len);
+    if (!len) {
+        return defaultValue;
+    }
+
+    BSONDocument document = BSONDocument(QByteArray((const char *) documentData, len));
+
+    for (const void *item = bson_first_item(document.m_doc.constData()); item != nullptr; item = bson_next_item(document.m_doc.constData(), item)) {
+        tmp.append(document.value(bson_key(item)));
+    }
+
+    return tmp;
 }
 
 } // Utils

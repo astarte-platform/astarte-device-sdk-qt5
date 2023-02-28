@@ -4,13 +4,37 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [1.0.1] - Unreleased
+## [1.0.5] - Unreleased
+### Added
+- Handle session present from CONNACK flag since Mosquitto 1.5.
+
+## [1.0.4] - 2022-10-25
+
+## [1.0.3] - 2022-07-08
+### Added
+- Add support for receiving array types.
+
+### Changed
+- Do not use qWarning() for mosquitto debug messages.
+
+## [1.0.2] - 2022-03-31
+
+## [1.0.1] - 2021-12-20
+### Added
+- Add public functions for connecting (connectToAstarte) and disconnecting (disconnectFromAstarte).
+- Add support for all array types by adding QList<T> overloads to sendData
+
 ### Changed
 - Make the SDK build with Qt versions earlier than 5.6. http redirects will not be supported on
   those versions.
 - Rename `agentKey` to `pairingJwt` in the configuration, deprecating the old name.
 - Deprecate `endpoint` in the configuration, introduce `pairingUrl` and `realm` in the configuration
   to replace it.
+
+### Fixed
+- Fixed `sendUnset` bug that prevented it from working.
+- Emit `connectionStatusChanged` only after performing the internal connection status handling (e.g.
+  publishing the introspection).
 
 ## [1.0.0] - 2021-06-28
 

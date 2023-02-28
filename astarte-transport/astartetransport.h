@@ -71,6 +71,9 @@ public:
 
     ConnectionStatus connectionStatus() const;
 
+    bool connectToBroker();
+    bool disconnectFromBroker();
+
 Q_SIGNALS:
     void introspectionChanged();
     void connectionStatusChanged();

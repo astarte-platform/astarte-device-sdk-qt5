@@ -142,7 +142,7 @@ void AstarteTransport::initImpl()
         } else {
           qCWarning(astarteTransportDC)
               << "endpoint is deprecated and will be removed in a future release."
-              << "Update your configuration using pairingJwt (which should point to the"
+              << "Update your configuration using pairingUrl (which should point to the"
               << "base Pairing URL, up to and excluding /v1) and realm (which should contain"
               << "the realm name)";
           endpointUrl = settings.value(QStringLiteral("endpoint")).toUrl();
@@ -423,8 +423,6 @@ void AstarteTransport::forceNewPairing()
 
 void AstarteTransport::onStatusChanged(MQTTClientWrapper::Status status)
 {
-    emit connectionStatusChanged();
-
     if (status == MQTTClientWrapper::ConnectedStatus) {
         // We're connected, stop the reboot timer
         qCDebug(astarteTransportDC) << "Connected, stopping the reboot timer";
@@ -447,6 +445,8 @@ void AstarteTransport::onStatusChanged(MQTTClientWrapper::Status status)
             m_rebootTimer->start();
         }
     }
+
+    emit connectionStatusChanged();
 }
 
 AstarteTransport::ConnectionStatus AstarteTransport::connectionStatus() const
@@ -652,6 +652,24 @@ void AstarteTransport::routeWave(const Hyperspace::Wave &wave, int fd)
     w.setPayload(wave.payload());
 
     Q_EMIT waveReceived(interface, w);
+}
+
+bool AstarteTransport::connectToBroker()
+{
+  if (m_mqttBroker.isNull()) {
+    return false;
+  }
+
+  return m_mqttBroker->connectToBroker();
+}
+
+bool AstarteTransport::disconnectFromBroker()
+{
+  if (m_mqttBroker.isNull()) {
+    return false;
+  }
+
+  return m_mqttBroker->disconnectFromBroker();
 }
 
 }

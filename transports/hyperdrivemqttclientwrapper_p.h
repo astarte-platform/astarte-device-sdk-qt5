@@ -79,6 +79,7 @@ public:
 
     // MQTT CALLBACKS
     void on_connect(int rc);
+    void on_connect_with_flags(int rc, int flags);
     void on_disconnect(int rc);
     void on_publish(int mid);
     void on_message(const struct mosquitto_message *message);
@@ -86,6 +87,10 @@ public:
     void on_unsubscribe(int mid);
     void on_log(int level, const char *str);
     void on_error();
+
+private:
+    void handleConnack(int rc);
+    static bool isSessionPresent(int flags);
 };
 
 class HyperdriveMosquittoClient : public mosqpp::mosquittopp
@@ -97,7 +102,11 @@ public:
     virtual ~HyperdriveMosquittoClient() {}
 
     // MQTT CALLBACKS. Just redirect to our private class
+#if LIBMOSQUITTO_MAJOR <= 1 && LIBMOSQUITTO_MINOR < 5
     inline virtual void on_connect(int rc) override { d->on_connect(rc); }
+#else
+    inline virtual void on_connect_with_flags(int rc, int flags) override { d->on_connect_with_flags(rc, flags); }
+#endif
     inline virtual void on_disconnect(int rc) override { d->on_disconnect(rc); }
     inline virtual void on_publish(int mid) override { d->on_publish(mid); }
     inline virtual void on_message(const struct mosquitto_message *message) override { d->on_message(message); }

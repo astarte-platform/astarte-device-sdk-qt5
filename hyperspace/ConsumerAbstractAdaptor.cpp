@@ -98,7 +98,7 @@ int ConsumerAbstractAdaptor::dispatchIndex(const QList<QByteArray> &inputTokens)
 
     QList<int> nextStates;
 
-    for (const QByteArray token : inputTokens) {
+    for (const QByteArray &token : inputTokens) {
         nextStates = QList<int>();
 
         for (int i = 0; i < currentStates.count(); i++) {
@@ -212,6 +212,18 @@ bool ConsumerAbstractAdaptor::payloadToValue(const QByteArray &payload, QDateTim
 
     *value = doc.dateTimeValue("v");
     return true;
+}
+
+bool ConsumerAbstractAdaptor::payloadToValue(const QByteArray &payload, QList<QVariant> *value)
+{
+  Util::BSONDocument doc(payload);
+  if (Q_UNLIKELY(!doc.isValid() || !doc.contains("v"))) {
+      *value = QList<QVariant>();
+      return false;
+  }
+
+  *value = doc.listVariantValue("v");
+  return true;
 }
 
 }
