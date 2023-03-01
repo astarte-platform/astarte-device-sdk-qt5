@@ -21,7 +21,10 @@
 #include "BSONDocument.h"
 #include "BSONSerializer.h"
 
+#include <QtCore/QLoggingCategory>
 #include <QtCore/QSharedData>
+
+Q_LOGGING_CATEGORY(reboundDataDC, "hyperspace.rebounddata", DEBUG_MESSAGES_DEFAULT_LEVEL)
 
 namespace Hyperspace {
 
@@ -154,11 +157,11 @@ Rebound Rebound::fromBinary(const QByteArray &data)
 {
     Util::BSONDocument doc(data);
     if (Q_UNLIKELY(!doc.isValid())) {
-        qWarning() << "Rebound BSON document is not valid!";
+        qCWarning(reboundDataDC) << "Rebound BSON document is not valid!";
         return Rebound(0);
     }
     if (Q_UNLIKELY(doc.int32Value("y") != (int32_t) Protocol::MessageType::Rebound)) {
-        qWarning() << "Received message is not a Rebound";
+        qCWarning(reboundDataDC) << "Received message is not a Rebound";
         return Rebound(0);
     }
 
@@ -167,7 +170,7 @@ Rebound Rebound::fromBinary(const QByteArray &data)
     if (doc.contains("a")) {
         Util::BSONDocument attributesDoc = doc.subdocument("a");
         if (!attributesDoc.isValid()) {
-            qDebug() << "Rebound attributes are not valid\n";
+            qCDebug(reboundDataDC) << "Rebound attributes are not valid\n";
             return Rebound(0);
         }
         r.setAttributes(attributesDoc.byteArrayValuesHash());

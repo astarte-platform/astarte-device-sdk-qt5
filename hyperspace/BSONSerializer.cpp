@@ -19,7 +19,7 @@
 #include "BSONSerializer.h"
 
 #include <QtCore/QByteArray>
-#include <QtCore/QDebug>
+#include <QtCore/QLoggingCategory>
 
 #include <stdint.h>
 #if defined(__APPLE__)
@@ -72,6 +72,8 @@
     d64.dval = (value); \
     d64.uval = htole64(d64.uval); \
     buf = d64.valBuf;
+
+Q_LOGGING_CATEGORY(bsonSerializerDC, "hyperspace.util.bsonserializer", DEBUG_MESSAGES_DEFAULT_LEVEL)
 
 namespace Hyperspace
 {
@@ -222,7 +224,7 @@ void BSONSerializer::appendValue(const char *name, const QVariant &value, bool s
                 break;
             }
 
-            qWarning() << "Can't find valid type for " << value;
+            qCWarning(bsonSerializerDC) << "Can't find valid type for " << value;
     }
 }
 

@@ -59,7 +59,7 @@ void AstarteDeviceSDK::initImpl()
     int decodedLen = QByteArray::fromBase64(m_hardwareId, QByteArray::Base64UrlEncoding).count();
     if (decodedLen != 16) {
         setInitError(Hemera::Literals::literal(Hemera::Literals::Errors::badRequest()), QStringLiteral("Invalid hardware ID"));
-        qWarning() << "Invalid device ID: " << m_hardwareId << ", decoded len: " << decodedLen;
+        qCWarning(astarteDeviceSDKDC) << "Invalid device ID: " << m_hardwareId << ", decoded len: " << decodedLen;
         return;
     }
     Hemera::FakeHardwareIDOperation::setHardwareId(m_hardwareId);
@@ -428,7 +428,7 @@ AstarteDeviceSDK::ConnectionStatus AstarteDeviceSDK::connectionStatus() const
 bool AstarteDeviceSDK::connectToAstarte()
 {
   if (!m_astarteTransport) {
-    qDebug() << "Not yet initialized, cannot connect to broker.";
+    qCDebug(astarteDeviceSDKDC) << "Not yet initialized, cannot connect to broker.";
     return false;
   }
 
@@ -438,7 +438,7 @@ bool AstarteDeviceSDK::connectToAstarte()
 bool AstarteDeviceSDK::disconnectFromAstarte()
 {
   if (!m_astarteTransport) {
-    qDebug() << "Not initialized, cannot disconnect from broker.";
+    qCDebug(astarteDeviceSDKDC) << "Not initialized, cannot disconnect from broker.";
     return false;
   }
 

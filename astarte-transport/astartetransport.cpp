@@ -167,7 +167,7 @@ void AstarteTransport::initImpl()
         connect(m_astarteEndpoint->init(), &Hemera::Operation::finished, this, [this] (Hemera::Operation *op) {
             if (op->isError()) {
                 //TODO: further handling?
-                qDebug(astarteTransportDC) << "An error happened during Astarte Endpoint init: " << op->errorMessage();
+                qCDebug(astarteTransportDC) << "An error happened during Astarte Endpoint init: " << op->errorMessage();
                 return;
             }
 
