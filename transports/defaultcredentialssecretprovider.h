@@ -44,6 +44,7 @@ public:
     void setHardwareId(const QByteArray &hardwareId);
     void setNAM(QNetworkAccessManager *nam);
     void setSslConfiguration(const QSslConfiguration &configuration);
+    void saveCredentialsSecret(const QByteArray &credentialsSecret);
 
 private slots:
     void sendRegistrationRequest();

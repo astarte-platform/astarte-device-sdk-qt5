@@ -48,6 +48,7 @@ public:
     QByteArray hardwareId;
 
     QByteArray pairingJwt;
+    QByteArray credentialsSecret;
     QString brokerCa;
     bool ignoreSslErrors;
 
