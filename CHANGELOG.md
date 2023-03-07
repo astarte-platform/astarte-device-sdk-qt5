@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.1.0] - 2023-03-07
 ### Added
 -  Introduce `credentialsSecret` in the configuration.
 
@@ -29,7 +29,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [1.0.1] - 2021-12-20
 ### Added
 - Add public functions for connecting (connectToAstarte) and disconnecting (disconnectFromAstarte).
-- Add support for all array types by adding QList<T> overloads to sendData
+- Add support for all array types by adding QList<T> overloads to sendData.
 
 ### Changed
 - Make the SDK build with Qt versions earlier than 5.6. http redirects will not be supported on
@@ -83,7 +83,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [0.10.0-rc.0] - 2019-04-03
 ### Added
-- Allow sending data from interfaces with object aggregation
+- Allow sending data from interfaces with object aggregation.
 
 ## [0.10.0-beta.3] - 2018-12-19
 
