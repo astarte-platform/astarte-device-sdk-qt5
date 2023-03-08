@@ -162,6 +162,11 @@ void HTTPEndpointPrivate::ensureCredentialsSecret()
     provider->setHardwareId(hardwareId);
     provider->setNAM(nam);
     provider->setSslConfiguration(sslConfiguration);
+
+    if (!this->credentialsSecret.isEmpty()) {
+        provider->saveCredentialsSecret(this->credentialsSecret);
+    }
+
     credentialsSecretProvider = provider;
 
     QObject::connect(credentialsSecretProvider, &CredentialsSecretProvider::credentialsSecretReady, q, [this, q] () {
