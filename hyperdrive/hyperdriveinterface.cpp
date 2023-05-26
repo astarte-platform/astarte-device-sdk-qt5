@@ -29,13 +29,13 @@ namespace Hyperdrive {
 class InterfaceData : public QSharedData
 {
 public:
-    InterfaceData() : interfaceType(Hyperdrive::Interface::Type::Unknown), interfaceQuality(Hyperdrive::Interface::Quality::Unknown) { }
-    InterfaceData(const QByteArray &interface, int versionMajor, int versionMinor, Interface::Type interfaceType, Interface::Quality interfaceQuality)
+    InterfaceData() : interfaceType(Hyperdrive::Interface::Type::Unknown), interfaceQuality(Hyperdrive::Interface::Quality::Unknown), interfaceAggregation(Hyperdrive::Interface::Aggregation::Unknown) { }
+    InterfaceData(const QByteArray &interface, int versionMajor, int versionMinor, Interface::Type interfaceType, Interface::Quality interfaceQuality, Interface::Aggregation interfaceAggregation)
         : interface(interface), versionMajor(versionMajor), versionMinor(versionMinor), interfaceType(interfaceType)
-        , interfaceQuality(interfaceQuality) { }
+        , interfaceQuality(interfaceQuality) , interfaceAggregation(interfaceAggregation) { }
     InterfaceData(const InterfaceData &other)
         : QSharedData(other), interface(other.interface), versionMajor(other.versionMajor), versionMinor(other.versionMinor)
-        , interfaceType(other.interfaceType), interfaceQuality(other.interfaceQuality) { }
+        , interfaceType(other.interfaceType), interfaceQuality(other.interfaceQuality), interfaceAggregation(other.interfaceAggregation) { }
     ~InterfaceData() { }
 
     QByteArray interface;
@@ -43,6 +43,7 @@ public:
     int versionMinor;
     Interface::Type interfaceType;
     Interface::Quality interfaceQuality;
+    Interface::Aggregation interfaceAggregation;
 };
 
 Interface::Interface()
@@ -55,8 +56,8 @@ Interface::Interface(const Interface &other)
 {
 }
 
-Interface::Interface(const QByteArray &interface, int versionMajor, int versionMinor, Type interfaceType, Quality interfaceQuality)
-    : d(new InterfaceData(interface, versionMajor, versionMinor, interfaceType, interfaceQuality))
+Interface::Interface(const QByteArray &interface, int versionMajor, int versionMinor, Type interfaceType, Quality interfaceQuality, Aggregation interfaceAggregation)
+    : d(new InterfaceData(interface, versionMajor, versionMinor, interfaceType, interfaceQuality, interfaceAggregation))
 {
 }
 
@@ -130,6 +131,17 @@ void Interface::setInterfaceQuality(Quality q)
 {
     d->interfaceQuality = q;
 }
+
+Interface::Aggregation Interface::interfaceAggregation() const
+{
+    return d->interfaceAggregation;
+}
+
+void Interface::setInterfaceAggregation(Aggregation a)
+{
+    d->interfaceAggregation = a;
+}
+
 
 bool Interface::isValid() const
 {
@@ -208,7 +220,19 @@ Interface Interface::fromJson(const QJsonObject &jsonObj)
         return Interface();
     }
 
-    return Interface(interface, versionMajor, versionMinor, interfaceType, interfaceQuality);
+    Aggregation interfaceAggregation;
+    if (jsonObj.contains(QStringLiteral("aggregation"))) {
+        QString AggregationString = jsonObj.value(QStringLiteral("aggregation")).toString();
+        if (AggregationString == QStringLiteral("object")) {
+            interfaceAggregation = Interface::Aggregation::Object;
+        } else {
+            interfaceAggregation = Interface::Aggregation::Individual;
+        }
+    } else {
+        interfaceAggregation = Interface::Aggregation::Individual;
+    }
+
+    return Interface(interface, versionMajor, versionMinor, interfaceType, interfaceQuality, interfaceAggregation);
 }
 
 }

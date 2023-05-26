@@ -178,7 +178,8 @@ void AstarteDeviceSDK::createConsumer(const Hyperdrive::Interface &interface, co
         }
     }
 
-    AstarteGenericConsumer *consumer = new AstarteGenericConsumer(interface.interface(), m_astarteTransport, this);
+    AstarteGenericConsumer *consumer = new AstarteGenericConsumer(interface.interface(),
+        interface.interfaceType(), interface.interfaceAggregation(), m_astarteTransport, this);
     consumer->setMappingToTokens(mappingToTokens);
     consumer->setMappingToType(mappingToType);
     consumer->setMappingToArrayType(mappingToArrayType);

@@ -71,6 +71,7 @@ static unsigned int bson_next_item_offset(unsigned int offset, unsigned int keyL
         }
         break;
 
+        case TYPE_ARRAY:
         case TYPE_DOCUMENT: {
             uint32_t docLen = read_uint32(docBytes + offset);
             offset += docLen;
@@ -516,6 +517,28 @@ BSONDocument::listVariantValue(const char *name,
         tmp.append(document.value(bson_key(item)));
     }
 
+    return tmp;
+}
+
+QHash<QByteArray, QVariant>
+BSONDocument::mapVariantValue(const char *name,
+                              const QHash<QByteArray, QVariant> &defaultValue) const {
+    QHash<QByteArray, QVariant> tmp;
+    uint8_t type;
+    const void *value = bson_key_lookup(name, m_doc.constData(), &type);
+
+    uint32_t len = 0;
+    const void *documentData = (const char *) bson_value_to_document(value, &len);
+    if (!len) {
+        return defaultValue;
+    }
+
+    BSONDocument document = BSONDocument(QByteArray((const char *) documentData, len));
+    for (const void *item = bson_first_item(document.m_doc.constData());
+
+    item != nullptr; item = bson_next_item(document.m_doc.constData(), item)) {
+        tmp.insert(QByteArray(bson_key(item)), document.value(bson_key(item)));
+    }
     return tmp;
 }
 
