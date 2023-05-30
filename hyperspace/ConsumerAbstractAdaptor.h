@@ -69,6 +69,7 @@ class ConsumerAbstractAdaptor : public AbstractWaveTarget
         bool payloadToValue(const QByteArray &payload, QString *value);
         bool payloadToValue(const QByteArray &payload, QDateTime *value);
         bool payloadToValue(const QByteArray &payload, QList<QVariant> *value);
+        bool payloadToValue(const QByteArray &payload, QHash<QByteArray, QVariant> *value);
 
     private:
         class Private;

@@ -23,6 +23,8 @@
 #include <QtCore/QDate>
 #include <QtCore/QHash>
 #include <QtCore/QPair>
+#include "ConsumerAbstractAdaptor.h"
+
 
 namespace Hyperspace
 {
@@ -223,6 +225,18 @@ bool ConsumerAbstractAdaptor::payloadToValue(const QByteArray &payload, QList<QV
   }
 
   *value = doc.listVariantValue("v");
+  return true;
+}
+
+bool ConsumerAbstractAdaptor::payloadToValue(const QByteArray &payload, QHash<QByteArray, QVariant> *value)
+{
+  Util::BSONDocument doc(payload);
+  if (Q_UNLIKELY(!doc.isValid() || !doc.contains("v"))) {
+      *value = QHash<QByteArray, QVariant>();
+      return false;
+  }
+
+  *value = doc.mapVariantValue("v");
   return true;
 }
 

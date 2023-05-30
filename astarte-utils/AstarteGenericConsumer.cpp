@@ -17,12 +17,18 @@
  */
 
 #include "AstarteGenericConsumer.h"
+#include "BSONDocument.h"
 
 #include <QtCore/QDateTime>
 #include <QtCore/QDebug>
 
-AstarteGenericConsumer::AstarteGenericConsumer(const QByteArray &interface, Hyperdrive::AstarteTransport *astarteTransport, AstarteDeviceSDK *parent)
+AstarteGenericConsumer::AstarteGenericConsumer(const QByteArray &interface,
+    Hyperdrive::Interface::Type interfaceType,
+    Hyperdrive::Interface::Aggregation interfaceAggregation,
+    Hyperdrive::AstarteTransport *astarteTransport, AstarteDeviceSDK *parent)
     : Hyperspace::ProducerConsumer::ConsumerAbstractAdaptor(interface, astarteTransport, parent)
+    , m_interfaceType(interfaceType)
+    , m_interfaceAggregation(interfaceAggregation)
 {
 }
 
@@ -54,8 +60,21 @@ void AstarteGenericConsumer::populateTokensAndStates()
 {
 }
 
-Hyperspace::ProducerConsumer::ConsumerAbstractAdaptor::DispatchResult AstarteGenericConsumer::dispatch(int i, const QByteArray &payload,
-                                                                                                       const QList<QByteArray> &inputTokens)
+Hyperspace::ProducerConsumer::ConsumerAbstractAdaptor::DispatchResult
+AstarteGenericConsumer::dispatch(
+    int i, const QByteArray &payload, const QList<QByteArray> &inputTokens)
+{
+    Q_UNUSED(i);
+    if (m_interfaceType == Hyperdrive::Interface::Type::DataStream
+        && m_interfaceAggregation == Hyperdrive::Interface::Aggregation::Object) {
+        return dispatchObject(i, payload, inputTokens);
+    }
+    return dispatchIndividual(i, payload, inputTokens);
+}
+
+Hyperspace::ProducerConsumer::ConsumerAbstractAdaptor::DispatchResult
+AstarteGenericConsumer::dispatchIndividual(
+    int i, const QByteArray &payload, const QList<QByteArray> &inputTokens)
 {
     Q_UNUSED(i);
     QHash<QByteArray, QByteArrayList>::const_iterator it;
@@ -150,4 +169,105 @@ Hyperspace::ProducerConsumer::ConsumerAbstractAdaptor::DispatchResult AstarteGen
 
     // If we're here, mapping not found
     return IndexNotFound;
+}
+
+Hyperspace::ProducerConsumer::ConsumerAbstractAdaptor::DispatchResult
+AstarteGenericConsumer::dispatchObject(
+    int i, const QByteArray &payload, const QList<QByteArray> &inputTokens)
+{
+    Q_UNUSED(i);
+    QHash<QByteArray, QByteArrayList>::const_iterator mappingIt;
+
+    QHash<QByteArray, QVariant> aggregateObjPayload;
+    QHash<QByteArray, QVariant> astarteAggregateValue;
+
+    if (!payloadToValue(payload, &aggregateObjPayload)) {
+        return CouldNotConvertPayload;
+    }
+
+    QByteArray interfacePath = QByteArray("/%1").replace("%1", inputTokens.join('/'));
+
+    for (auto aggregateIt = aggregateObjPayload.cbegin(), end = aggregateObjPayload.cend();
+         aggregateIt != end; ++aggregateIt) {
+
+        QByteArray path;
+        path.append(interfacePath).append("/").append(aggregateIt.key());
+        QList<QByteArray> paths = path.mid(1).split('/');
+
+        for (mappingIt = m_mappingToTokens.constBegin(); mappingIt != m_mappingToTokens.constEnd();
+             mappingIt++) {
+
+            if (paths.size() != mappingIt.value().size()) {
+                continue;
+            }
+
+            bool mappingMatch = true;
+            for (int pathIndex = 0; pathIndex < paths.size(); ++pathIndex) {
+                if (mappingIt.value().at(pathIndex).startsWith("%{")) {
+                    continue;
+                }
+
+                if (paths.at(pathIndex) != mappingIt.value().at(pathIndex)) {
+                    mappingMatch = false;
+                }
+            }
+
+            if (!mappingMatch) {
+                continue;
+            }
+
+            QByteArray matchedMapping = mappingIt.key();
+
+            if (m_mappingToArrayType.contains(matchedMapping)) {
+                if (aggregateIt.value().type() != QVariant::Type::List) {
+                    return CouldNotConvertPayload;
+                }
+            } else {
+                switch (m_mappingToType.value(matchedMapping)) {
+                    case QMetaType::Bool: {
+                        if (aggregateIt.value().type() != QVariant::Type::Bool)
+                            return CouldNotConvertPayload;
+                        break;
+                    }
+                    case QMetaType::Int: {
+                        if (aggregateIt.value().type() != QVariant::Type::Int)
+                            return CouldNotConvertPayload;
+                        break;
+                    }
+                    case QMetaType::LongLong: {
+                        if (aggregateIt.value().type() != QVariant::Type::LongLong)
+                            return CouldNotConvertPayload;
+                        break;
+                    }
+                    case QMetaType::QByteArray: {
+                        if (aggregateIt.value().type() != QVariant::Type::ByteArray)
+                            return CouldNotConvertPayload;
+                        break;
+                    }
+                    case QMetaType::Double: {
+                        if (aggregateIt.value().type() != QVariant::Type::Double)
+                            return CouldNotConvertPayload;
+                        break;
+                    }
+                    case QMetaType::QString: {
+                        if (aggregateIt.value().type() != QVariant::Type::String)
+                            return CouldNotConvertPayload;
+                        break;
+                    }
+                    case QMetaType::QDateTime: {
+                        if (aggregateIt.value().type() != QVariant::Type::DateTime)
+                            return CouldNotConvertPayload;
+                        break;
+                    }
+                    default:
+                        return CouldNotConvertPayload;
+                }
+            }
+            astarteAggregateValue.insert(aggregateIt.key(), aggregateIt.value());
+        }
+    }
+
+    parent()->receiveValue(interface(), interfacePath, QVariant::fromValue(astarteAggregateValue));
+
+    return Hyperspace::ProducerConsumer::ConsumerAbstractAdaptor::Success;
 }

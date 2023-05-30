@@ -21,6 +21,7 @@
 
 #include <HyperspaceProducerConsumer/ConsumerAbstractAdaptor>
 
+#include <hyperdriveinterface.h>
 #include <AstarteDeviceSDK.h>
 
 namespace Hyperdrive {
@@ -33,7 +34,10 @@ class AstarteGenericConsumer : public Hyperspace::ProducerConsumer::ConsumerAbst
     Q_DISABLE_COPY(AstarteGenericConsumer)
 
 public:
-    explicit AstarteGenericConsumer(const QByteArray &interface, Hyperdrive::AstarteTransport *astarteTransport, AstarteDeviceSDK *parent = nullptr);
+    explicit AstarteGenericConsumer(const QByteArray &interface,
+        Hyperdrive::Interface::Type interfaceType,
+        Hyperdrive::Interface::Aggregation interfaceAggregation,
+        Hyperdrive::AstarteTransport *astarteTransport, AstarteDeviceSDK *parent = nullptr);
     virtual ~AstarteGenericConsumer();
 
     void setMappingToTokens(const QHash<QByteArray, QByteArrayList> &mappingToTokens);
@@ -47,11 +51,16 @@ protected:
 
 private:
     inline AstarteDeviceSDK *parent() const { return static_cast<AstarteDeviceSDK *>(QObject::parent()); }
+    Hyperspace::ProducerConsumer::ConsumerAbstractAdaptor::DispatchResult dispatchIndividual(int i, const QByteArray &payload, const QList<QByteArray> &inputTokens);
+    Hyperspace::ProducerConsumer::ConsumerAbstractAdaptor::DispatchResult dispatchObject(int i, const QByteArray &payload, const QList<QByteArray> &inputTokens);
 
     QHash<QByteArray, QByteArrayList> m_mappingToTokens;
     QHash<QByteArray, QVariant::Type> m_mappingToType;
     QHash<QByteArray, QVariant::Type> m_mappingToArrayType;
     QHash<QByteArray, bool> m_mappingToAllowUnset;
+
+    Hyperdrive::Interface::Type m_interfaceType;
+    Hyperdrive::Interface::Aggregation m_interfaceAggregation;
 };
 
 #endif // ASTARTE_GENERIC_CONSUMER_H
