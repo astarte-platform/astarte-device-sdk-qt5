@@ -235,7 +235,8 @@ AstarteGenericConsumer::dispatchObject(
                         break;
                     }
                     case QMetaType::LongLong: {
-                        if (aggregateIt.value().type() != QVariant::Type::LongLong)
+                        if (aggregateIt.value().type() != QVariant::Type::LongLong &&
+                            aggregateIt.value().type() != QVariant::Type::Int)
                             return CouldNotConvertPayload;
                         break;
                     }
